@@ -1,3 +1,92 @@
 <html>
-<h1>Blank Page</h1>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<link rel="stylesheet" href="app.css">
+<h1>Testing Chart.js</h1>
+<script>
+    var chart=null;
+  async function graph(title){
+    if(chart!=null){
+        chart.destroy();
+    }
+
+    
+    let x = await fetch('/graphName', {
+        method: 'POST', // or 'PUT'
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({name : title}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.x)
+            
+
+         
+var ctx = document.getElementById('myChart').getContext('2d');
+
+     chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'bar',
+    
+        // The data for our dataset
+        data: {
+            labels: data.x,
+            datasets: [{
+                label: "ZipCode Frequency For "+title,
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: data.y
+            }]
+        },
+    
+        // Configuration options go here
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        callback: function (value) { if (Number.isInteger(value)) { return value; } }
+                    },scaleLabel: {
+                    display: true,
+                    labelString: 'Frequency of Zipcode'
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                       
+                    },scaleLabel: {
+                    display: true,
+                    labelString: 'Zipcode'
+                    }
+                }]
+            }
+        }
+    });
+        })
+        .catch((error) => {
+        console.error('Error:', error);
+        });
+    
+    
+  }
+
+  
+</script>
+<div class="dropdown">
+    <button class="dropbtn">Dropdown</button>
+    <div class="dropdown-content">
+      <a id ="Survey One" onclick='graph(this.id)'>Survey Holder 1</a>
+      <a id = "Survey Two" onclick = 'graph(this.id)'>Survey Holder 2</a>
+      <a id = "Survey Three" onclick = 'graph(this.id)'>Survey Holder 3</a>
+    </div>
+  </div>
+
+<div class="chart-container" style="position: relative;height:30vh; width:80vw">
+    <canvas id="myChart"></canvas>
+</div>
+
+
+
 </html>
