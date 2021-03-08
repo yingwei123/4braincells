@@ -133,7 +133,7 @@ return prom;
 }
 
 function createEntry(baseId,SurveyName,translated,lang){
-  const base = new Airtable({ apiKey: keyjLZvySgdKfMZfy }).base(baseId)
+  const base = new Airtable({ apiKey: "keyjLZvySgdKfMZfy" }).base(baseId)
  
   var json = { };
 
@@ -158,7 +158,7 @@ function createEntry(baseId,SurveyName,translated,lang){
 }
 
 function createDeadentry(baseId,SurveyName){
-  const base = new Airtable({ apiKey: keyjLZvySgdKfMZfy }).base(baseId)
+  const base = new Airtable({ apiKey: "keyjLZvySgdKfMZfy" }).base(baseId)
  
  
   base(SurveyName).create([
