@@ -141,6 +141,7 @@ function createEntry(baseId,SurveyName,translated,lang){
     json[translated[i][0]] = translated[i][1];
   }
   json["language"] = lang
+  json["completed"] = "yes"
   base(SurveyName).create([
     {
       "fields": json
