@@ -10,7 +10,7 @@ const { json } = require('body-parser');
 var mongoose = require('mongoose');
 const Users = require('./models/Users')
 const Tokens = require('./models/Tokens')
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 mongoose.connect('mongodb://localhost:27017/4braincells',  { useNewUrlParser: true,useUnifiedTopology: true })
 
@@ -239,11 +239,12 @@ app.post("/createUser", async(req,res) =>{
   lname = req.body.lastname
   try{
     let exist = await Users.findOne({ email });
-    console.log(exist)
+    
     if(exist){
+      console.log("pog")
       res.status(400).send("User Already Exist")
     }else{
-      hashedPassword = await bcrypt.hash(password,10)
+      hashedPassword = await bcrypt.hashSync(password,10)
       const newUser = new Users();
       newUser.email = email
       newUser.password = hashedPassword
@@ -254,6 +255,7 @@ app.post("/createUser", async(req,res) =>{
     }
     
   }catch(err){
+    console.log("trigger")
     res.send(err)
   }
 
@@ -265,7 +267,7 @@ app.post("/login", async(req,res) =>{
   password = req.body.password
   try{
     let userToGet = await Users.find({email:email})
-    let isUser = await bcrypt.compare(password,userToGet[0].password)
+    let isUser = await bcrypt.compareSync(password,userToGet[0].password)
     
     if(isUser){
       let deleteCurrent = await delteTokenByUserId(userToGet[0]._id.toString())
