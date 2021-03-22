@@ -11,10 +11,11 @@ var mongoose = require('mongoose');
 const Users = require('./models/Users')
 const Tokens = require('./models/Tokens')
 const bcrypt = require('bcryptjs');
-
-mongoose.connect('mongodb://localhost:27017/4braincells',  { useNewUrlParser: true,useUnifiedTopology: true })
-
 require('dotenv').config()
+
+mongoose.connect(process.env.MONGODB_URI||'mongodb://localhost:27017/4braincells',  { useNewUrlParser: true,useUnifiedTopology: true })
+
+
 
 app.use(bodyparser.json())
 app.use(express.static(path.join(__dirname, 'views')));
