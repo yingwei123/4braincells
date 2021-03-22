@@ -7,6 +7,13 @@ const translate = require('@vitalets/google-translate-api');
 const { count } = require('console');
 const Airtable = require('airtable');
 const { json } = require('body-parser');
+var mongoose = require('mongoose');
+const Users = require('./models/Users')
+const Tokens = require('./models/Tokens')
+const bcrypt = require('bcrypt');
+
+mongoose.connect('mongodb://localhost:27017/4braincells',  { useNewUrlParser: true,useUnifiedTopology: true })
+
 require('dotenv').config()
 
 app.use(bodyparser.json())
@@ -16,12 +23,18 @@ app.listen(process.env.PORT || 3000,()=>{
     console.log("Server is listening on port " + 3000)
 })
 
-app.get("/signin", (req,res)=>{
-    res.send("signin.ejs")
-})
+app.get("/login",(req,res)=>{
+  
+  res.render('signin.ejs')
+
+} )
 
 app.get("/translate", (req,res)=>{
   res.render("translate.ejs")
+})
+
+app.get("/import",(req,res) =>{
+  res.render("import.ejs")
 })
 
 app.get("/signup",(req,res)=>{
@@ -141,7 +154,7 @@ function createEntry(baseId,SurveyName,translated,lang){
     json[translated[i][0]] = translated[i][1];
   }
   json["language"] = lang
-  json["completed"] = "yes"
+  json["completed"] ="yes"
   base(SurveyName).create([
     {
       "fields": json
@@ -217,3 +230,171 @@ app.post("/translate", (req,res)=>{
 
   
 })
+
+//user register
+app.post("/createUser", async(req,res) =>{
+  email = req.body.email
+  password = req.body.password
+  fname = req.body.firstname
+  lname = req.body.lastname
+  try{
+    let exist = await Users.findOne({ email });
+    console.log(exist)
+    if(exist){
+      res.status(400).send("User Already Exist")
+    }else{
+      hashedPassword = await bcrypt.hash(password,10)
+      const newUser = new Users();
+      newUser.email = email
+      newUser.password = hashedPassword
+      newUser.firstname = fname
+      newUser.lastname = lname
+      const user = await newUser.save();
+      res.status(201).send(user)
+    }
+    
+  }catch(err){
+    res.send(err)
+  }
+
+})
+
+//user Login
+app.post("/login", async(req,res) =>{
+  email = req.body.email
+  password = req.body.password
+  try{
+    let userToGet = await Users.find({email:email})
+    let isUser = await bcrypt.compare(password,userToGet[0].password)
+    
+    if(isUser){
+      let deleteCurrent = await delteTokenByUserId(userToGet[0]._id.toString())
+      console.log(deleteCurrent)
+      const newToken = new Tokens();
+      newToken.user = userToGet[0]._id
+      newToken.active = true
+      const token = await newToken.save();
+
+      return res.status(200).send({token:token._id})
+    }
+    res.send({token:null})
+  }catch(err){
+    res.send(err)
+  }
+
+})
+
+app.get("/adminTest", async(req,res)=>{
+  try{
+    allUser = await Users.find({})
+    res.send(allUser)
+  }catch(err){
+    res.send(err)
+  }
+})
+
+app.get("/adminToken", async(req,res)=>{
+  try{
+    allToken = await Tokens.find({})
+    res.send(allToken)
+  }catch(err){
+    res.send(err)
+  }
+})
+
+//get user by token_id
+async function getUserByToken(token_id){
+  try{
+    token = await Tokens.findById(token_id)
+    if(token.active == false){
+      return null
+    }
+    user_id = token.user
+    userToFind = await Users.findById(user_id)
+
+    return userToFind
+  }catch(err){
+    return null
+  }
+}
+
+app.post("/getUserById",async(req,res) =>{
+  try{
+    user = await Users.findById(req.body.id)
+    
+    res.send(user)
+  }catch(err){
+    res.send(err)
+  }
+})
+
+app.post("/TestingFunction",async(req,res) =>{
+  try{
+    let user = await delteTokenByUserId(req.body.user_id) 
+    if(user == null){
+      return res.status(400).send("This is a invalid Token")
+    }
+    return res.send(user)
+  }catch(err){
+    return res.send(err)
+  }
+})
+
+async function delteTokenByUserId(user_id){
+  try{  
+    token = await Tokens.findOneAndDelete(user_id)
+   
+    return true
+  }catch(err){
+    return err
+  }
+}
+
+//token valid for 24hrs
+async function determineValid(token_id){
+  try{
+    token = await Tokens.findById(token_id)
+    if(token.active == true){
+      date = Date.now()
+      let timeDiff = date - token.date
+      if(timeDiff > 60 * 60 * 1000*24){
+        updatedToken = await Tokens.findByIdAndUpdate(token_id,{active:false})
+        return false
+      }else{
+        return true
+      }
+    }
+    return false
+  }catch(err){
+    return false
+  }
+}
+
+app.get("/validate/:token", async(req,res)=>{
+  try{
+    token = req.params.token
+    valid = await determineValid(token)
+    return res.send({valid:valid})
+
+  }catch(err){
+    res.send(err)
+  }
+})
+
+app.get("/logout/:token", async(req,res) =>{
+  try{
+    worked = await logOut(req.params.token)
+    return res.send({worked:worked})
+  }catch(err){
+    res.send(err)
+  }
+})
+
+async function logOut(token_id){
+  try{
+    token = await Tokens.findByIdAndDelete(token_id)
+    return true
+  }catch(err){
+    return err
+  }
+}

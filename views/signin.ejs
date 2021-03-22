@@ -1,6 +1,53 @@
+<script>
+
+    fetch('/validate/'+localStorage.getItem("token"))
+    .then(response => response.json())
+    .then(data => {
+        if(data.valid == false){
+            localStorage.removeItem('token')
+        }else{
+            window.location.replace("/blank")
+        }
+    }); 
+
+    function login(){
+        email = document.getElementById("email").value
+        password = document.getElementById("password").value
+
+        const data = { email: email, password:password };
+
+        fetch('/login', {
+        method: 'POST', // or 'PUT'
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.token != null){
+     
+            localStorage.removeItem('token');
+            localStorage.setItem('token', data.token);
+            window.location.replace("/blank")
+            }else{
+                document.getElementById("hidden").innerHTML = "Wrong Password or Email"
+            }
+            
+        })
+        .catch((error) => {
+        console.error('Error:', error);
+        });
+        
+    }
+</script>
+
 <html>
    <label>Email : </label> <input id ="email"/>
 </br>
 <label>Password : </label>
-    <input id = "password"/>
+    <input type = "password" id = "password"/>
+<br>
+<button onclick = "login()">Login</button>
+<div id = "hidden"></div>
 </html>

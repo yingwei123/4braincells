@@ -72,10 +72,21 @@ var ctx = document.getElementById('myChart').getContext('2d');
     
   }
 
+  function logOut(){
+    fetch('/logout/'+localStorage.getItem("token"))
+    .then(response => response.json())
+    .then(data => {
+        if(data.worked ){
+            localStorage.removeItem('token')
+            window.location.replace("/login")
+        }
+    }); 
+  }
   
 </script>
 <div class="dropdown">
     <button class="dropbtn">Dropdown</button>
+    <button onclick = "logOut()">Log Out</button>
     <div class="dropdown-content">
       <a id ="Survey One" onclick='graph(this.id)'>Survey Holder 1</a>
       <a id = "Survey Two" onclick = 'graph(this.id)'>Survey Holder 2</a>
@@ -86,6 +97,8 @@ var ctx = document.getElementById('myChart').getContext('2d');
 <div class="chart-container" style="position: relative;height:30vh; width:80vw">
     <canvas id="myChart"></canvas>
 </div>
+
+
 
 
 
