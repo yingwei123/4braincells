@@ -1,0 +1,145 @@
+body{
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    min-width: 1000px;
+    background: #0086f4;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 800;
+}
+.leftContainer{
+    width: 25%;
+    height: 100vh;
+    background: #e8eded;
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+}
+::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+}
+.searchTypeContainer{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-around;
+}
+.peopleType{
+    color: #bababa;
+}
+.searchIcon{
+    width: 100px;
+    position: absolute;
+    margin-top: 15px;
+    margin-left: 10px;
+}
+.iconContainer{
+    width: 90%;
+}
+.searchContainer{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    margin-top: 30px;
+}
+.searchInput{
+    border: none;
+    width: 100%;
+    border-radius: 50px;
+    height: 50px;
+    text-indent: 50px;
+    font-size: 20px;
+    box-shadow: 0 8px 6px -6px gray;
+}
+.recentMessage{
+    font-weight: 400;
+}
+.recentMessageContainer{
+    overflow: scroll;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.recentMessageBlock{
+    width: 90%;
+    margin-top: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 20px;
+    box-shadow: 0 8px 6px -6px gray;
+}
+.nameMessage{
+    margin-left: 15px;
+}
+.recentMessageSplit{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.recentTime{
+    margin-left: auto;
+}
+.recentProfile{
+    width: 75px;
+}
+.receiverPicture{
+    width: 75px;
+    margin-right: 20px;
+}
+.middleContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 50%;
+    height: 100vh;
+    background: white;
+}
+.block{
+    color: gray;
+    margin-right: 30px;
+}
+.inputContainer{
+    width: 45%;
+}
+.socketContainer{
+    background: #0086f4;
+}
+.chatProfile{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 10px;
+    padding-top: 10px;
+}
+.chatProfileInfo{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.inputMessage{
+    width: 90%;
+    height: 50px;
+    border-radius: 20px;
+    border: none;
+    background: #e8eded;
+}
+
+.rightContainer{
+    width: 25%;
+    background: white;
+    height: 100vh;
+    border-left: 1px solid gray;
+}
+input:focus{
+    outline: none;
+}

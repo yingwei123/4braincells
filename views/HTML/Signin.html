@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="views/CSSCSS/signin.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/f1627fd21a.js" crossorigin="anonymous"></script>
+    <script src="views/Scriptipt/Signin.js"></script>
+</head>
+<body>
+    <div class="background">
+        <div class="signInContainer">
+            <img src="views/assetset/mockLogo.png">
+            <h2 id="slogan">Connect with others in one platform</h2>
+            <h4 id="login">Login</h4>
+            <div id="line" class="line"></div>
+            <input id="name" placeholder="Full Name" maxlength="45" onchange="">
+            <input id="email" placeholder="Email Address" maxlength="45" onchange="checkEmail(this.value)">
+            <p id="invalidEmail" class="invalid">Please enter a valid email</p>
+            <div class="passContainer">
+                <input id="password" placeholder="Password" maxlength="16" onchange="checkPass(this.value)" type="password">
+                <div id="hide" class="hide" onclick="passwordVisibility()">
+                    <i id="hidePass" class="fas fa-eye-slash fa-lg hidePass"></i>
+                </div>
+                <div id="show" class="show" onclick="passwordVisibility()">
+                    <i id="showPass" class="fas fa-eye fa-lg showPass"></i>
+                </div>
+
+            </div>
+            <p id="invalidPass" class="invalid"></p>
+            <button id="loginButton" class="loginButton" onclick="sendRequest()">Login</button>
+            <div class="loginSwitch">
+                <p id="switchText">Don't have an account?</p>
+                <p id="switch" onclick="switchLogins()">Create One</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
