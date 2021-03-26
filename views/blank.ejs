@@ -4,6 +4,26 @@
 <link rel="stylesheet" href="app.css">
 <h1>Testing Chart.js</h1>
 <script>
+    fetch('/allEmail/'+localStorage.getItem("token")).then(response =>response.json())
+    .then((data) =>{
+
+        for( var i = 0; i<data.userList.length;i++){
+            var btn = document.createElement("BUTTON");
+			btn.innerHTML = "Talk to " + data.userList[i]
+			btn.classList.add("frmBtn")
+			btn.id = data.userList[i]
+			btn.onclick = function(){
+				alert(this.id)
+            }
+            document.getElementById("loader-parent").append(btn)
+            var div1 = document.createElement("div");
+            document.getElementById("loader-parent").append(div1)
+        }
+        console.log(data)
+    }).catch((err) =>{
+        console.log(err)
+    })
+
     var chart=null;
   async function graph(title){
     if(chart!=null){
@@ -96,6 +116,10 @@ var ctx = document.getElementById('myChart').getContext('2d');
 
 <div class="chart-container" style="position: relative;height:30vh; width:80vw">
     <canvas id="myChart"></canvas>
+</div>
+
+<div id="loader-parent">
+
 </div>
 
 

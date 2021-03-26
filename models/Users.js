@@ -38,7 +38,12 @@ const mongoose = require('mongoose');
    profilePic :{
      type : String,
      default : "https://i.imgur.com/bX2AcOK.png"
-   }
+   },
+   
+   chatRooms :{
+    type : [String],
+    default : []
+  },
 
 
 

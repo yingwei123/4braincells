@@ -11,7 +11,9 @@ var mongoose = require('mongoose');
 const Users = require('./models/Users')
 const Tokens = require('./models/Tokens')
 const bcrypt = require('bcryptjs');
+const ChatRooms = require('./models/ChatRooms')
 require('dotenv').config()
+
 
 mongoose.connect(process.env.MONGODB_URI||'mongodb://localhost:27017/4braincells',  { useNewUrlParser: true,useUnifiedTopology: true })
 
@@ -401,3 +403,65 @@ async function logOut(token_id){
     return err
   }
 }
+
+app.post("/createChatRoom", async(req,res)=>{
+  try{
+    messages = await getChatroom(req.body.personA, req.body.personB)
+    res.send(messages)
+    
+  }catch(err){
+    res.send(err)
+  }
+})
+
+async function getChatroom(personA, personB){
+  try{
+    exist = await ChatRooms.findOne({PersonOne:personA, PersonTwo:personB})
+    if(exist){
+      
+      return (exist.Messages)
+    }
+    exist2 = await ChatRooms.findOne({PersonOne:personB, PersonTwo:personA})
+    if(exist2){
+      return (exist.Messages)
+    }
+    const newchatRoom = new ChatRooms()
+    newchatRoom.PersonOne = personA
+    newchatRoom.PersonTwo = personB
+    newchatRoom.Messages = ["New Room Created :D"]
+    const  createdRoom = await newchatRoom.save()
+    let userone = await Users.findOneAndUpdate(personA, {$push:{chatRooms: createdRoom._id}})
+    let usertwo = await Users.findOneAndUpdate(personB, {$push:{chatRooms: createdRoom._id}})
+    
+    return (createdRoom.Messages)
+    
+  }catch(err){
+    return null
+  }
+}
+
+app.get("/allChatRoom", async(req,res) =>{
+  try{
+    chats = await ChatRooms.find({})
+    res.send(chats)
+  }catch(err){
+    res.send(err)
+  }
+})
+
+
+app.get("/allEmail/:token", async(req,res) =>{
+  try{
+    valid = await determineValid(req.params.token)
+    if(valid){
+      user = await Users.find({})
+      emailList = []
+      await user.forEach(users => emailList.push(users.email))
+
+      return res.send({userList:emailList})
+    }
+    return res.Status(400).send("Token not valid")
+  }catch(err){
+    res.send(err)
+  }
+})
