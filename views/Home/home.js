@@ -1,4 +1,8 @@
 let type = 'message'
+
+function d() {
+    console.log(userDetail);
+}
 function getMessages(id) {
     console.log(id)
 }

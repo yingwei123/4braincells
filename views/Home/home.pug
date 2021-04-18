@@ -6,59 +6,73 @@ html
         title Message App
         link(rel='stylesheet', href='./home.css', type='text/css')
         script(src='https://kit.fontawesome.com/f1627fd21a.js', crossorigin='anonymous')
+        script.
+            const userDetail = !{JSON.stringify(user)}
+            const chatDetail = !{JSON.stringify(chat)}
+            const receiver = !{JSON.stringify(receiver)}
         script(src='./home.js')
         link(rel='preconnect', href='https://fonts.gstatic.com')
         link(href='https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,800;1,800&display=swa', rel='stylesheet')
     body
         div.leftContainer
             div.userProfile
-                img.rounded.recentProfile(src='../asset/mockLogo.png')
-                h3.userName Test User
-            div.searchTypeContainer
-                p.messaageType.clickable#Message(onclick="changeMessage()") MESSAGE
-                p.peopleType.clickable#People(onclick="changePeople()") PEOPLE
+                div.userProfileImageContainer
+                    img.rounded.recentProfile(src=user.profilePic)
+                    i.fas.fa-camera.fa-lg.editProfileImage
+                h3.userName= user.firstname+user.lastname
             div.searchContainer
                 div.iconContainer
                     i.fas.fa-search.fa-lg.searchIcon
                     input.searchInput(placeholder="Search")
             div.recentMessageContainer
-                if messages.length
-                    each message in messages
-                        div.recentMessageBlock.clickable(id=message.id onclick="getMessages(this.id)")
-                            div.recentMessageSplit
-                                img.rounded.recentProfile(src=message.profile)
-                                div.nameMessage
-                                    p.recentName= message.name
-                                    p.recentMessage= message.recent_message
-                                p.recentTime= message.time
-                else
-                    p.noFriends Add friends to chat with them
+                each message in messages
+                    div.recentMessageBlock.clickable(id=message.id onclick="getMessages(this.id)")
+                        div.recentMessageSplit
+                            img.rounded.recentProfile(src=message.profile)
+                            div.nameMessage
+                                p.recentName= message.name
+                                p.recentMessage= message.recent_message
+                            p.recentTime= message.time
+                each user in onlineUsers
+                    div.recentMessageBlock.clickable(id=message.id onclick="getMessages(this.id)")
+                        div.recentMessageSplit
+                            img.rounded.recentProfile(src=message.profile)
+                            div.nameMessage
+                                p.recentName= message.name
+                                p.recentMessage Start a Conversation
+                            p.recentTime= message.time
+
         div.rightContainer
-            div.chatProfile
-                div.chatProfileInfo
-                    img.receiverPicture.rounded(src='../asset/mockLogo.png')
-                    p.receiverName Jokle Frfjd
-                span.block
-                    i.fas.fa-ban.fa-lg.blockIcon
-            div.socketContainer
-                each individualMessage in individualMessages
-                    if individualMessage.sent
-                        div.singleMessageContainerRight
-                            div.messageContentContainerRight
-                                p.senderName= individualMessage.receiver
-                                p.messageContent= individualMessage.content
-                            img.messageSenderImage.rounded(src=individualMessage.profile)
-                    else
-                        div.singleMessageContainerLeft
-                            img.messageSenderImage.rounded(src=individualMessage.profile)
-                            div.messageContentContainerLeft
-                                p.senderName= individualMessage.receiver
-                                p.messageContent= individualMessage.content
-            div.inputContainer
-                div.imageIconInput
-                    i.far.fa-image.fa-2x.imageIcon
-                    input.inputMessage(placeholder='Type here to send a message')
-                    i.fas.fa-paper-plane.fa-2x.sendIcon
+            if chat.length === 0
+                div.noChatContainer
+                    i.fas.fa-hand-point-left.fa-5x
+                    h1 Start Chatting
+            else
+                div.chatProfile
+                    div.chatProfileInfo
+                        img.receiverPicture.rounded(src='../asset/mockLogo.png')
+                        p.receiverName Jokle Frfjd
+                    span.block
+                        i.fas.fa-ban.fa-lg.blockIcon
+                div.socketContainer
+                    each individualMessage in individualMessages
+                        if individualMessage.sent
+                            div.singleMessageContainerRight
+                                div.messageContentContainerRight
+                                    p.senderName= individualMessage.receiver
+                                    p.messageContent= individualMessage.content
+                                img.messageSenderImage.rounded(src=user.profilePic)
+                        else
+                            div.singleMessageContainerLeft
+                                img.messageSenderImage.rounded(src=individualMessage.profile)
+                                div.messageContentContainerLeft
+                                    p.senderName= individualMessage.receiver
+                                    p.messageContent= individualMessage.content
+                div.inputContainer
+                    div.imageIconInput
+                        i.far.fa-image.fa-2x.imageIcon
+                        input.inputMessage(placeholder='Type here to send a message')
+                        i.fas.fa-paper-plane.fa-2x.sendIcon
 
 
 
