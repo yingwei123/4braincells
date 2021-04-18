@@ -1,25 +1,31 @@
+html {
+    width: 100%;
+    height: 100%;
+}
 body{
     margin: 0;
     display: flex;
     flex-direction: row;
     align-items: flex-start;
     min-width: 1000px;
-    background: #0086f4;
     font-family: 'Open Sans', sans-serif;
     font-weight: 800;
+    width: 100%;
+    height: 100%;
 }
 .leftContainer{
-    width: 25%;
-    height: 100vh;
+    width: 700px;
+    height: 100%;
     background: #e8eded;
     display: flex;
     flex-direction: column;
-
     align-items: center;
+    border-right: 2px solid #d9d9d9;
 }
-::-webkit-scrollbar {
-    width: 0;
-    background: transparent;
+.messageContentTextContainer{
+    background: #0086f4;
+    padding: 1px 15px;
+    border-radius: 10px;
 }
 .searchTypeContainer{
     display: flex;
@@ -33,18 +39,23 @@ body{
 .searchIcon{
     width: 100px;
     position: absolute;
-    margin-top: 15px;
+    margin-top: 17px;
     margin-left: 10px;
 }
 .iconContainer{
     width: 90%;
 }
+.userProfile{
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 .searchContainer{
     width: 100%;
     display: flex;
     justify-content: center;
-    margin-bottom: 30px;
-    margin-top: 30px;
 }
 .searchInput{
     border: none;
@@ -59,7 +70,7 @@ body{
     font-weight: 400;
 }
 .recentMessageContainer{
-    overflow: scroll;
+    overflow-y: auto;
     width: 100%;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -75,6 +86,9 @@ body{
     padding: 10px;
     border-radius: 20px;
     box-shadow: 0 8px 6px -6px gray;
+}
+.recentMessageBlock:hover{
+    background: rgba(120, 168, 245, 0.3);
 }
 .nameMessage{
     margin-left: 15px;
@@ -94,12 +108,15 @@ body{
     width: 75px;
     margin-right: 20px;
 }
-.middleContainer{
+.rounded{
+    border-radius: 50%;
+}
+.rightContainer{
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    width: 50%;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     background: white;
 }
 .block{
@@ -107,24 +124,39 @@ body{
     margin-right: 30px;
 }
 .inputContainer{
-    width: 45%;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
 }
 .socketContainer{
-    background: #0086f4;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 }
+
 .chatProfile{
     width: 100%;
+    height: 100px;
+    border-width: 1px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding-left: 10px;
     padding-top: 10px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 .chatProfileInfo{
     display: flex;
     flex-direction: row;
     align-items: center;
+    margin-left: 10px;
 }
 .inputMessage{
     width: 90%;
@@ -132,14 +164,63 @@ body{
     border-radius: 20px;
     border: none;
     background: #e8eded;
+    padding-left: 50px;
 }
 
-.rightContainer{
-    width: 25%;
-    background: white;
-    height: 100vh;
-    border-left: 1px solid gray;
-}
 input:focus{
     outline: none;
 }
+.singleMessageContainerLeft{
+    margin: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+.singleMessageContainerRight{
+    margin: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+.messageSenderImage{
+    width: 60px;
+}
+.messageContentContainerLeft{
+    word-wrap: break-word;
+    margin-left: 10px;
+    height: 60px;
+}
+.messageContentContainerRight{
+    margin-right: 10px;
+    height: 60px;
+    text-align: right;
+
+}
+.imageIcon{
+    position: absolute;
+    margin-left: 10px;
+    color: #2eb3e8;
+}
+.senderName{
+    margin: 0;
+}
+.sendIcon{
+    color: #2eb3e8;
+    margin-left: 10px;
+}
+.messageContent{
+    font-weight: 500;
+}
+.imageIconInput{
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    width: 100%;
+}
+.blockIcon{
+    color: #2eb3e8;
+}
+.clickable{
+    cursor: pointer;
+}
+

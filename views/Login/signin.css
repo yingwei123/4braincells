@@ -9,7 +9,7 @@ body{
 }
 
 .background{
-    background-image: url(views/asset/backGround.png);
+    background-image: url(../asset/backGround.png);
     background-repeat: no-repeat, repeat;
     background-size: cover;
     margin: 0;
