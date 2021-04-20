@@ -7,24 +7,62 @@ const mongoose = require('mongoose');
 
 
    PersonOne: {
-     type:String,
-     default :"",
-
+       id: {
+           type: String,
+           required: true
+       },
+       firstName: {
+           type: String,
+           required: true
+       },
+       lastName: {
+           type: String,
+           required: true
+       },
    },
 
    PersonTwo:{
-     type:String,
-     default :"",
-
+       id: {
+           type: String,
+           required: true,
+       },
+       firstName: {
+           type: String,
+           required: true
+       },
+       lastName: {
+           type: String,
+           required: true
+       },
    },
 
-   Messages:{
-     type :[String],
-     required: true,
-     default :"",
-   },
-   
-
+   Messages:[{
+       content:{
+           type: String,
+           required: true,
+           default :"",
+       },
+       sender:{
+           id: {
+               type: String,
+               required: true
+           },
+       },
+       receiver: {
+           id: {
+               type: String,
+               required: true
+           },
+       },
+       timestamp: {
+           type: Date,
+           required: true
+       }
+   }],
+     lastActivity: {
+         type: [String],
+         required: true
+     }
 
 
  });
