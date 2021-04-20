@@ -12,8 +12,58 @@
 			btn.innerHTML = "Talk to " + data.userList[i]
 			btn.classList.add("frmBtn")
 			btn.id = data.userList[i]
-			btn.onclick = function(){
-				alert(this.id)
+			btn.onclick = async function(){
+               let message = await getConvo(this.id)
+
+               document.getElementById("convo").innerHTML = "";
+                
+
+               var intro = document.createElement("div");
+               intro.innerHTML = "Welcome to your conversation with "+ this.id
+               document.getElementById("convo").append(intro)
+               var space = document.createElement("br");
+               document.getElementById("convo").append(space)
+
+               let newT = document.createElement("div");
+                newT.id = "newText"
+                document.getElementById("convo").append(newT)
+
+               for ( i = 0; i< message.length; i++){
+                    var div1 = document.createElement("div");
+                    if(message[i].includes("You : ")){
+                        div1.innerHTML = message[i]
+                        div1.id = "currentUser"
+
+                    }else if(message[i].includes(this.id)){
+                        div1.innerHTML = message[i]
+                        div1.id = this.id
+                    }else{
+                        div1.innerHTML = message[i]
+                        div1.id = "server"
+                    }
+                    document.getElementById("newText").append(div1)
+               }
+               var text = document.createElement("input");
+               text.id = "currentText"
+               document.getElementById("convo").append(text)
+               var subText = document.createElement("BUTTON");
+               subText.innerHTML = "Send Message"
+               subText.onclick = async function(){
+                   textToAdd = document.getElementById("currentText").value
+                   newText = "You : " + textToAdd
+                   var div1 = document.createElement("div");
+                   div1.innerHTML = newText;
+                   div1.id = "currentUser"
+                   document.getElementById("newText").append(div1)
+                   document.getElementById("currentText").value = ""
+
+
+               }
+               document.getElementById("convo").append(subText)
+
+
+               console.log(message)
+				// alert(this.id)
             }
             document.getElementById("loader-parent").append(btn)
             var div1 = document.createElement("div");
@@ -91,7 +141,27 @@ var ctx = document.getElementById('myChart').getContext('2d');
     
     
   }
-
+async function getConvo(email){
+ 
+   messages = await fetch('/getChatRoom', {
+        method: 'POST', // or 'PUT'
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({personA : localStorage.getItem("token"), personB : email}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            
+            return data;
+        
+        })
+        .catch((error) => {
+        console.error('Error:', error);
+        });
+       return messages
+    
+}
   function logOut(){
     fetch('/logout/'+localStorage.getItem("token"))
     .then(response => response.json())
@@ -118,8 +188,19 @@ var ctx = document.getElementById('myChart').getContext('2d');
     <canvas id="myChart"></canvas>
 </div>
 
+
+
+
 <div id="loader-parent">
 
+</div>
+<br>
+<br>
+
+<div id = "clear">
+    <div id="convo">
+        <div id = "newText"></div>
+    </div>
 </div>
 
 
