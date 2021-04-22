@@ -1,4 +1,5 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
 const bodyparser = require('body-parser')
 const path = require('path')
@@ -11,8 +12,9 @@ mongoose.set('useFindAndModify', false);
 
 
 app.use(bodyparser.json())
+app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'views')));
-
+app.set('view engine', 'pug');
 app.listen(process.env.PORT || 3000,()=>{
     console.log("Server is listening on port " + 3000)
 })
