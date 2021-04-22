@@ -15,7 +15,7 @@ function createChatRoom(receiverID){
     //const request = new XMLHttpRequest();
     //request.onreadystatechange	=	function(){
         //if	(this.readyState	===	4	&&	this.status	===	200){
-            const responseData = {messages: [{content:"hello", sender: "60638aa825d9c75cdcb451ff", receiver:"60580b85a9c98baeca2cf10e"}, {content:"hello", sender: "60580b85a9c98baeca2cf10e", receiver:"60638aa825d9c75cdcb451ff"}], receiver: {firstname: 'Ying',
+            const responseData = {messages: [{content:"hello", sender: "608099eaebddd0639887b778", receiver:"60580b85a9c98baeca2cf10e"}, {content:"hello", sender: "60580b85a9c98baeca2cf10e", receiver:"60638aa825d9c75cdcb451ff"}], receiver: {firstname: 'Ying',
                     lastname: 'Li',
                     email: 'ying@gmail.com',
                     password: '$2a$10$ujyw6GceclIBCZzqr5v62OxFdlmdEjv0dX2NF0qRuc/onfOLURG9y',

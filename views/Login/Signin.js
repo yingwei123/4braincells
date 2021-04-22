@@ -1,31 +1,34 @@
 let login = true;
 let showPass = false;
-function sendRequest(){
-    const email = document.getElementById("email").value;
+async function sendRequest(){
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-    const name = document.getElementById("name").value;
+    const name = document.getElementById("name").value.trim();
     if(checkEmail(email) && checkPass(password)){
-        console.log("VALID E and P");
-        fetch('/signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({email:email, password:password, name:name}),
-        })
-            .then(response => response.status)
-            .then(data => {
-                if(data === 400){
-                    alert("Failed to create user")
-                }
-                else{
-                    window.location = "/blank"
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
+        if (name) {
+            const request = await fetch('/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({email:email, password:password, name:name}),
             });
 
+        }else {
+            const request = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({email:email, password:password})
+            });
+            if (!request.ok){
+                document.getElementById("InvalidLogin").style.display = "block";
+            }
+            else if (request.redirected) {
+                window.location.href = request.url;
+            }
+        }
     }
 }
 function passwordVisibility(){
@@ -54,6 +57,7 @@ function checkEmail(input){
     }
     return valid;
 }
+
 function checkPass(input){
     const invalid = input.length < 8;
     if (invalid){
@@ -74,6 +78,7 @@ function switchLogins(){
         document.getElementById("line").style.width = "80px";
         document.getElementById("switchText").textContent = "Don't have an account?";
         document.getElementById("switch").textContent = "Create One";
+        document.getElementById("name").value = ""
     }else {
         document.getElementById("name").style.display = "block";
         document.getElementById("login").textContent= "Create Account";

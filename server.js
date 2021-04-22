@@ -1,23 +1,29 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
+const app = express();
 const bodyparser = require('body-parser')
 const path = require('path')
 const mongoose = require('mongoose');
 const socketio = require("socket.io")
 const http = require("http")
-const app = express();
 const chatFunc = require('./routes/chatFunc.js');
 require('dotenv').config()
 
 
 
 app.use(bodyparser.json())
+app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'views')));
 
 const server = http.createServer(app);
 
+
+app.set('view engine', 'pug');
 server.listen(process.env.PORT || 3000,()=>{
     console.log("Server is listening on port " + 3000)
 })
+
+
 
 const io = socketio(server)
 

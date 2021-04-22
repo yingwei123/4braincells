@@ -2,11 +2,12 @@ const Users = require('../models/Users')
 const Tokens = require('../models/Tokens')
 const tokenFunc = require("./tokenFunc.js")
 const bcrypt = require('bcryptjs');
+const ChatRooms = require("../models/ChatRooms");
 
 async function createUser(email,password,fname,lname){
     try{
         let exist = await Users.findOne({ email });
-        
+
         if(exist){
           console.log("User Exist")
           return 400
@@ -20,7 +21,7 @@ async function createUser(email,password,fname,lname){
           const user = await newUser.save();
           return 201
         }
-        
+
       }catch(err){
         console.log("trigger")
         console.log(err)
@@ -31,7 +32,7 @@ async function createUser(email,password,fname,lname){
 async function getUserById(id){
     try{
         user = await Users.findById(id)
-        
+
         return user
       }catch(err){
         return err
@@ -70,7 +71,7 @@ async function login(email,password){
       //   console.log("Pog 4")
         return({token:null})
       }catch(err){
-       return err
+        return({token:null})
       }
 }
 
@@ -81,7 +82,7 @@ async function getAllEmail(tok){
           user = await Users.find({})
           emailList = []
           await user.forEach(users => emailList.push(users.email))
-    
+
           return ({userList:emailList})
         }
         return ("Token not valid")
