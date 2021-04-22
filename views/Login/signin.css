@@ -8,6 +8,13 @@ body{
     padding: 0;
 }
 
+#InvalidLogin{
+    color: red;
+    display: none;
+}
+.slogan{
+    margin-top: 15px;
+}
 .background{
     background-image: url(../asset/backGround.png);
     background-repeat: no-repeat, repeat;

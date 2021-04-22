@@ -8,31 +8,37 @@ module.exports = app =>{
 //user register(currently using for sign up)
 app.post("/createUser", async(req,res) =>{
     try{
-    email = req.body.email
-    password = req.body.password
-    fname = req.body.firstname
-    lname = req.body.lastname
-    let created = await userFunc.createUser(email,password,fname,lname)
+    const email = req.body.email
+    const password = req.body.password
+    const fullName = req.body.firstname
+    const [firstName, lastName] = fullName.split(' ', 2)
+    let created = await userFunc.createUser(email,password,firstName,lastName)
     res.sendStatus(created)
     }catch(err){
         res.send(err)
     }
 
-  
+
   })
-  
+
   //user Login
   app.post("/login", async(req,res) =>{
       try{
-    email = req.body.email
-    password = req.body.password
+            const email = req.body.email;
+            const password = req.body.password;
 
-    let login = await userFunc.login(email,password)
-    res.send(login)
+            let login = await userFunc.login(email,password);
+            if(login.token){
+                res.cookie('token', login.token)
+                res.redirect(302, '/home');
+            }
+            else {
+                res.sendStatus(404)
+            }
       }catch(err){
-          res.send(err)
+          res.sendStatus(404)
       }
-  
+
   })
 
   //return all users for testing purposes
@@ -65,7 +71,7 @@ app.post("/createUser", async(req,res) =>{
     email = req.body.email
     password = req.body.password
     cpass = req.body.cpassword
-   
+
     if(password = cpass){
         res.sendStatus(200)
     }else{
@@ -74,6 +80,6 @@ app.post("/createUser", async(req,res) =>{
 }catch(err){
     res.send(err)
 }
-    
+
 })
 }
