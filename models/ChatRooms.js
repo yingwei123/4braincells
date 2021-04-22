@@ -43,26 +43,26 @@ const mongoose = require('mongoose');
            default :"",
        },
        sender:{
-           id: {
+           
                type: String,
                required: true
-           },
+           
        },
        receiver: {
-           id: {
+          
                type: String,
                required: true
-           },
+           
        },
        timestamp: {
            type: Date,
            required: true
        }
    }],
-     lastActivity: {
-         type: [String],
-         required: true
-     }
+    //  lastActivity: {
+    //      type: [String],
+    //      required: true
+    //  }
 
 
  });

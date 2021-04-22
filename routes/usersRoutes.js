@@ -49,6 +49,11 @@ app.post("/createUser", async(req,res) =>{
     res.send(users)
   })
 
+  app.get("/deleteAll",async(req,res)=>{
+    let deleteAll = await userFunc.deleteAll()
+    res.send(200)
+  })
+
   //get all email, need valid token
   app.get("/allEmail/:token", async(req,res) =>{
       try{

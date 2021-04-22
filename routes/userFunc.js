@@ -51,17 +51,17 @@ async function getAllUsers(){
 
 async function login(email,password){
     try{
-        let userToGet = await Users.find({email:email})
-       
-        let isUser = await bcrypt.compareSync(password,userToGet[0].password)
+        let userToGet = await Users.findOne({email:email})
+        
+        let isUser = await bcrypt.compareSync(password,userToGet.password)
       //   console.log("Pog 1")
         if(isUser){
           // console.log("Pog 2")
-          let deleteCurrent = await tokenFunc.delteTokenByUserId(userToGet[0]._id.toString())
+          let deleteCurrent = await tokenFunc.delteTokenByUserId(userToGet._id)
           // console.log("Pog ?")
           console.log(deleteCurrent)
           const newToken = new Tokens();
-          newToken.user = userToGet[0]._id
+          newToken.user = userToGet._id
           newToken.active = true
           const token = await newToken.save();
           // console.log("Pog 3")
@@ -89,4 +89,22 @@ async function getAllEmail(tok){
         return err
       }
 }
-module.exports = {createUser, getUserById, getAllUsers, login, getAllEmail}
+
+async function getUserByEmail(email){
+  try{
+    let users = await Users.findOne({email:email})
+    return users
+  }catch(err){
+    return err
+  }
+}
+async function deleteAll(){
+  try{
+    let x = await Users.deleteMany({})
+    return x
+  }catch(err){
+    console.log(err)
+  }
+}
+
+module.exports = {createUser, getUserById, getAllUsers, login, getAllEmail,getUserByEmail,deleteAll}

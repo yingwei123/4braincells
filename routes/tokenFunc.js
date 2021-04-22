@@ -14,6 +14,7 @@ const Users = require('../models/Users')
   async function determineValid(token_id){
     try{
       token = await Tokens.findById(token_id)
+      console.log(token_id)
       if(token.active == true){
         date = Date.now()
         let timeDiff = date - token.date
@@ -26,6 +27,7 @@ const Users = require('../models/Users')
       }
       return false
     }catch(err){
+      console.log(err)
       return false
     }
   }
