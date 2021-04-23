@@ -28,7 +28,7 @@ server.listen(process.env.PORT || 3000,()=>{
 const io = socketio(server)
 
 
-mongoose.connect(process.env.MONGODB_URI||'mongodb://localhost:27017/4braincells',  { useNewUrlParser: true,useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI||'mongodb://mongo:27017/4braincells',  { useNewUrlParser: true,useUnifiedTopology: true })
 mongoose.set('useFindAndModify', false);
 
 io.on('connection',async socket=>{
