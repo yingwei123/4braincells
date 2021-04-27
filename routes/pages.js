@@ -26,11 +26,14 @@ module.exports = app =>{
     app.get("/home", async (req,res)=>{
         const token = req.cookies['token'];
         const data =  await userFunc.getUserHomeDetail(token);
-        console.log(data)
         res.render('./Home/home.pug', data)
     })
 
     app.get("/", (req,res)=>{
-        res.render('./Login/signin.pug')
+        if(req.cookies['token']){
+            res.redirect(302, '/home');
+        }else {
+            res.render('./Login/signin.pug')
+        }
     })
 }

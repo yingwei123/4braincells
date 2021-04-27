@@ -13,11 +13,9 @@ const mongoose = require('mongoose');
        },
        firstName: {
            type: String,
-           required: true
        },
        lastName: {
            type: String,
-           required: true
        },
    },
 
@@ -28,11 +26,9 @@ const mongoose = require('mongoose');
        },
        firstName: {
            type: String,
-           required: true
        },
        lastName: {
            type: String,
-           required: true
        },
    },
 
@@ -43,16 +39,16 @@ const mongoose = require('mongoose');
            default :"",
        },
        sender:{
-           
+
                type: String,
                required: true
-           
+
        },
        receiver: {
-          
+
                type: String,
                required: true
-           
+
        },
        timestamp: {
            type: Date,

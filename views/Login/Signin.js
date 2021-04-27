@@ -13,7 +13,12 @@ async function sendRequest(){
                 },
                 body: JSON.stringify({email:email, password:password, name:name}),
             });
-
+            if (!request.ok){
+                document.getElementById("InvalidLogin").style.display = "block";
+            }
+            else if (request.redirected) {
+                window.location.href = request.url;
+            }
         }else {
             const request = await fetch('/login', {
                 method: 'POST',

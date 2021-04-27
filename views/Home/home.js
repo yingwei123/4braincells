@@ -10,8 +10,30 @@ function changeMessage(){
     document.getElementById('People').style.color = '#bababa';
     document.getElementById('Message').style.color = '#000000';
 }
-
+function te(id){
+    const element = document.getElementById(id)
+    element.setAttribute("data-chat", "ksfbdvj")
+    element.id = "body.chatRoom._id"
+    element.onclick = "getChatRecords(body.chatRoom._id)"
+}
 function createChatRoom(receiverID){
+    const request = new XMLHttpRequest();
+    request.onreadystatechange = function(){
+        if (this.readyState	===	4	&&	this.status	===	200){
+            const body = this.response;
+            receiver = body.receiver
+            const element = document.getElementById(receiverID)
+            element.setAttribute("data-chat", body.chatRoom._id)
+            element.id = body.chatRoom._id
+            element.onclick = getChatRecords(body.chatRoom._id)
+        }
+    }
+    request.open("POST", "/newChat");
+    const messageObject = {"receiver": receiverID, "sender": userDetail._id};
+    request.setRequestHeader("Content-type", "application/json");
+    request.send(JSON.stringify(messageObject));
+}
+function getChatRecords(receiverID){
     //const request = new XMLHttpRequest();
     //request.onreadystatechange	=	function(){
         //if	(this.readyState	===	4	&&	this.status	===	200){
