@@ -48,4 +48,12 @@ module.exports = app =>{
         }
       })
       
+      app.get("/deleteAllToken",async(req,res)=>{
+        try{
+          let del = await tokenFunc.clearTokens()
+          res.send(del)
+        }catch(err){
+          res.send(err)
+        }
+      })
 }

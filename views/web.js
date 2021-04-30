@@ -7,23 +7,36 @@ socket.on('message',message=>{
 
 socket.on('connect', function() {
     console.log('Connected to server');
-    socket.emit('init', {user:localStorage.getItem("token")})
+    fetch('/getUserByToken')
+    .then(response => response.json())
+    .then((data)=>{
+        console.log(data)
+        socket.emit('init', {user:data})
+    });
+
+    
 });
 
 
 function test(msg, reciever, chatroom_id){
     // console.log("Client msg "+ msg)
     date = new Date()
-    socket.emit('msg', {user:localStorage.getItem("token"), msg:msg, reciever:reciever, chatroom_id:chatroom_id,date: date.toTimeString()})
+    fetch('/getUserByToken')
+    .then(response => response.json())
+    .then((data)=>{
+        socket.emit('msg', {user:data, msg:msg, reciever:reciever, chatroom_id:chatroom_id,date: date.toTimeString()})
+    });
+    
 }
 
-async function getChatRoomId(token, reciever){
+async function getChatRoomId(reciever){
+    console.log("First")
     let chatId = await fetch('/findChatroom', {
         method: 'POST', // or 'PUT'
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({token : token,reciever:reciever}),
+        body: JSON.stringify({reciever:reciever}),
         })
         .then(response => response.json())
         .then(data => {

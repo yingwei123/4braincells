@@ -63,4 +63,13 @@ async function getAllToken(){
     return allToken
 }
 
-module.exports = {delteTokenByUserId, determineValid, getUserByToken, logOut, getAllToken};
+async function clearTokens(){
+    try{
+        let deleted = await Tokens.deleteMany({})
+        return (deleted )
+    }catch(err){
+        return err
+    }
+}
+
+module.exports = {delteTokenByUserId, determineValid, getUserByToken, logOut, getAllToken,clearTokens};

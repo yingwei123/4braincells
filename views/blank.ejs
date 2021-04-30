@@ -8,17 +8,17 @@
 
 <script>
     chatRoom_id = null
-     
-    fetch('/allEmail/'+localStorage.getItem("token")).then(response =>response.json())
+    
+    fetch('/allEmail').then(response =>response.json())
     .then((data) =>{
-
+        console.log(data)
         for( var i = 0; i<data.userList.length;i++){
             var btn = document.createElement("BUTTON");
 			btn.innerHTML = "Talk to " + data.userList[i]
 			btn.classList.add("frmBtn")
 			btn.id = data.userList[i]
 			btn.onclick = async function(){
-               chatRoom_id = await getChatRoomId(localStorage.getItem("token"), this.id)
+               chatRoom_id = await getChatRoomId(this.id)
             //    let message = await getConvo(this.id)
             console.log("Getting this id " + chatRoom_id)
             let message = await getConvo(chatRoom_id)
@@ -89,7 +89,7 @@
   }
 // async function getConvo(email){
     async function getConvo(chatroom_id){
-      
+      console.log("Second")
  
    messages = await fetch('/getMessages', {
         method: 'POST', // or 'PUT'

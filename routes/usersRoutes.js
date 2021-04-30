@@ -1,6 +1,6 @@
 const e = require('express');
 const userFunc = require("./userFunc.js")
-
+const tokenFunc = require("./tokenFunc.js")
 
 
 module.exports = app =>{
@@ -59,16 +59,24 @@ module.exports = app =>{
         let users = await userFunc.getUserById(req.body.id)
         res.send(users)
     })
-
+    app.get("/getUserByToken", async(req,res) =>{
+        try{
+            let user = await tokenFunc.getUserByToken(req.cookies['token'])
+            res.send(user._id)
+        }catch(err){
+            res.send(err)
+        }
+    })
     app.get("/deleteAll",async(req,res)=>{
         let deleteAll = await userFunc.deleteAll()
         res.send(200)
     })
 
     //get all email, need valid token
-    app.get("/allEmail/:token", async(req,res) =>{
+    app.get("/allEmail", async(req,res) =>{
       try{
-    let allEmail = await userFunc.getAllEmail(req.params.token)
+         
+    let allEmail = await userFunc.getAllEmail(req.cookies['token'])
     res.send(allEmail)
       }catch(err){
           res.send(err)

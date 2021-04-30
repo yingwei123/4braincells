@@ -10,21 +10,16 @@ const { compare } = require('bcryptjs')
 const { findByIdAndUpdate } = require('../models/ChatRooms')
 
 
-async function incommingMessage(token, personB, message, date,chatroom_id){
-  let currentUser = await tokenFunc.getUserByToken(token)
+async function incommingMessage(id, personB, message, date,chatroom_id){
+  
   let personB_user = await userFunc.getUserByEmail(personB)
-  // const personB_id = personB_user._id
-  // const personA_id = currentUser._id
 
-  console.log(currentUser._id + " send "+ message + " to "+ personB_user._id +" data = "+ date+ " room = "+ chatroom_id)
-  let addedMessage = await addMessage(chatroom_id,message,currentUser,personB_user)
+
+  console.log(id + " send "+ message + " to "+ personB_user._id +" data = "+ date+ " room = "+ chatroom_id)
+  let addedMessage = await addMessage(chatroom_id,message,id,personB_user)
   console.log(addedMessage)
   return addedMessage
-  // let messages = await getChatroom(currentUser, personB_user, message,date)
 
-  // console.log(messages)
-
-  // console.log(personA_id + " send "+ message + " to "+ personB_id)
 }
 
 async function getMessages(chatroom_id){
@@ -42,8 +37,8 @@ async function addMessage(chatroom_id, content,sender, receiver){
     try{
       const msg ={
         content:content,
-        sender:sender._id,
-        receiver: receiver._id,
+        sender:sender,
+        receiver: receiver._id.toString(),
         timestamp: new Date()
 
       }
@@ -70,20 +65,23 @@ async function findChatRoom(token, receiver){
       let personB_user = await userFunc.getUserByEmail(receiver)
       const userListofRooms = userFromToken.chatRooms
 
+      console.log(userListofRooms.length)
 
       for(var i =0; i<userListofRooms.length; i++){
         let chatRoomToCheck = await ChatRooms.findById(userListofRooms[i])
-        const idToCheck = personB_user._id
-        if(chatRoomToCheck.PersonOne.id === userFromToken._id
-            && chatRoomToCheck.PersonTwo.id === idToCheck
-            || chatRoomToCheck.PersonOne.id === idToCheck
-            && chatRoomToCheck.PersonTwo.id === userFromToken._id){
+        console.log("ChatId equal "+ chatRoomToCheck.PersonOne.id + " " + userFromToken._id)
+        console.log("ChatId2 equal "+ chatRoomToCheck.PersonTwo.id + " " + personB_user._id)
+        if(chatRoomToCheck.PersonOne.id == userFromToken._id
+            && chatRoomToCheck.PersonTwo.id == personB_user._id
+            || chatRoomToCheck.PersonOne.id == personB_user._id
+            && chatRoomToCheck.PersonTwo.id == userFromToken._id){
           console.log("exist return")
 
           return chatRoomToCheck._id
         }
-        console.log("compare "+ chatRoomToCheck.PersonOne.id + " to "+ idToCheck)
+    
       }
+
       const newchatRoom = new ChatRooms()
       const personAToStore = {
         id: userFromToken._id,
@@ -100,8 +98,8 @@ async function findChatRoom(token, receiver){
       newchatRoom.Messages = []
       let savedNewChatRoom = await newchatRoom.save()
 
-      await Users.findByIdAndUpdate(personAToStore.id,{chatRooms:savedNewChatRoom._id})
-      await Users.findByIdAndUpdate(personBToStore.id,{chatRooms:savedNewChatRoom._id})
+      await Users.findByIdAndUpdate(personAToStore.id,{$push:{chatRooms:savedNewChatRoom._id}})
+      await Users.findByIdAndUpdate(personBToStore.id,{$push:{chatRooms:savedNewChatRoom._id}})
 
       console.log("doesnt exist create new")
       return(savedNewChatRoom._id)
@@ -111,94 +109,6 @@ async function findChatRoom(token, receiver){
   }
 }
 
-// async function getChatroom(personA, personB,message,date){
-//     // console.log(personA + " " + personB)
-//     try{
-//       exist = await ChatRooms.findOne({id:personA._id, idTwo:personB._id})
-//       exist2 = await ChatRooms.findOne({id:personB._id, idTwo:personA._id})
-//       console.log(exist)
-//       if(exist2 == undefined && exist == undefined){
-//         const newchatRoom = new ChatRooms()
-
-//         personAToStore = {
-//           id: personA._id,
-//           firstName: personA.firstname,
-//           lastName: personA.lastname
-//         }
-//         personBToStore = {
-//           id: personB._id,
-//           firstName: personB.firstname,
-//           lastName: personB.lastname
-//         }
-//         msgItem = {
-//           content: message,
-//           sender: personA._id,
-//           receiver : personB._id,
-//           timestamp :new Date()
-
-//         }
-//         // console.log(personAToStore)
-//         newchatRoom.PersonOne = personAToStore
-//         newchatRoom.PersonTwo = personBToStore
-//         // newchatRoom.PersonOne.id = personA._id
-//         // newchatRoom.PersonOne.firstName = personA.firstName
-//         // newchatRoom.PersonOne.lastname = personA.lastname
-//         // newchatRoom.PersonTwo.id = personB._id
-//         // newchatRoom.PersonTwo.firstName = personB.firstName
-//         // newchatRoom.PersonTwo.lastname = personB.lastname
-
-
-
-//         // newchatRoom.PersonOne= {
-//         //   id: personA._id,
-//         //   firstName: personA.firstname,
-//         //   lastName: personA.lastname
-//         // }
-
-//         // newchatRoom.PersonTwo = {
-//         //   id: personB._id,
-//         //   firstName: personB.firstname,
-//         //   lastName: personB.lastname
-//         // }
-
-//         newchatRoom.Messages = [msgItem]
-//         let savedNewChatRoom =await newchatRoom.save()
-//         userOne = await Users.findByIdAndUpdate(personAToStore.id,{chatRooms:savedNewChatRoom._id})
-//         userTwo = await Users.findByIdAndUpdate(personBToStore.id,{chatRooms:savedNewChatRoom._id})
-//         console.log(newchatRoom)
-
-//       }else{
-//         if(exist != undefined){
-//           console.log(exist)
-//         }else{
-//           console.log(exist2)
-//         }
-//       }
-
-
-//       // if(exist != undefined){
-
-//       //   return (exist.Messages)
-//       // }
-//       // exist2 = await ChatRooms.findOne({PersonOne:personB, PersonTwo:personA})
-//       // if(exist2){
-//       //   return (exist.Messages)
-//       // }
-//       // const newchatRoom = new ChatRooms()
-//       // newchatRoom.PersonOne = personA
-//       // newchatRoom.PersonTwo = personB
-//       // newchatRoom.Messages = ["New Room Created :D"]
-//       // const  createdRoom = await newchatRoom.save()
-//       // let userone = await Users.findOneAndUpdate(personA, {$push:{chatRooms: createdRoom._id}} )
-//       // let usertwo = await Users.findOneAndUpdate(personB, {$push:{chatRooms: createdRoom._id}})
-
-//       // return (createdRoom.Messages)
-
-//     }catch(err){
-//       console.log(err)
-//       return null
-//     }
-//   }
 
 async function getAllChatRoom(){
   try{

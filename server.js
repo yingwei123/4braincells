@@ -28,25 +28,29 @@ server.listen(process.env.PORT || 3000,()=>{
 const io = socketio(server)
 
 
-mongoose.connect(process.env.MONGODB_URI||'mongodb://mongo:27017/4braincells',  { useNewUrlParser: true,useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI||'mongodb://localhost:27017/4braincells',  { useNewUrlParser: true,useUnifiedTopology: true })
 mongoose.set('useFindAndModify', false);
+
+let userSockets ={}
 
 io.on('connection',async socket=>{
     console.log("Socket Connected")
 
-    // socket.broadcast.emit('initial_connect',"initial backend")
-    // socket.broadcast.emit('message',"User has joined");
+    
     socket.on('init',message =>{
-        console.log(message)
-        // console.log(socket)
+        console.log(message.user + " socket is added")
+        userSockets[message.user.toString()] = socket;
+     
     })
 
     socket.on('msg', async message=>{
 
         // socket.broadcast.emit("message", message)
         let msg = await chatFunc.incommingMessage(message.user, message.reciever,message.msg, message.date,message.chatroom_id)
-        io.emit('message',msg);
-        // io.emit('message',message);
+
+            userSockets[msg.receiver].emit('message',msg)
+            userSockets[message.user].emit('message',msg)
+        
     })
     
 })
