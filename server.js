@@ -33,6 +33,8 @@ mongoose.set('useFindAndModify', false);
 
 let userSockets ={}
 
+userPlayer ={}
+
 io.on('connection',async socket=>{
     console.log("Socket Connected")
 
@@ -40,6 +42,10 @@ io.on('connection',async socket=>{
     socket.on('init',message =>{
         console.log(message.user + " socket is added")
         userSockets[message.user.toString()] = socket;
+        for (var key in userSockets) {
+    
+           userSockets[key].emit('status', {user : message.user, online:"online"})
+        }
      
     })
 
@@ -52,6 +58,37 @@ io.on('connection',async socket=>{
             userSockets[message.user].emit('message',msg)
         
     })
+
+    socket.on('gameStart', async message=>{
+        userPlayer[message.user.toString()] = {x:message.x, y:message.y};
+       // for (var key in userPlayer) {
+        console.log(message)
+            //userSockets[key].emit('status', {user : message.user, online:"online"})
+         //}
+    })
+
+    socket.on('movement', async message=>{
+        userPlayer[message.user]= {x:message.x, y:message.y}
+        console.log(message)
+    })
+
+    socket.on('disconnect', () =>{
+        userToRemove = "user id"
+        for (var key in userSockets) {
+            if(userSockets[key] == socket){
+                console.log(key  + " socket is removed")
+                userToRemove = key
+                delete userSockets[key];
+                break;
+            }
+            
+         }
+         for (var key in userSockets) {
+    
+            userSockets[key].emit('status', {user : userToRemove, online:"offline"})
+         }
+    })
+
     
 })
 

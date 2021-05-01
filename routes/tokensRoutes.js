@@ -29,9 +29,9 @@ module.exports = app =>{
       })
       
       //deletes the token and logs out the user
-      app.get("/logout/:token", async(req,res) =>{
+      app.get("/logout", async(req,res) =>{
         try{
-          worked = await tokenFunc.logOut(req.params.token)
+          worked = await tokenFunc.logOut(req.cookies["token"])
           return res.send({worked:worked})
         }catch(err){
           res.send(err)

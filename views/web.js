@@ -17,6 +17,21 @@ socket.on('connect', function() {
     
 });
 
+socket.on('status',message=>{
+    console.log(message)
+})
+
+ function start(x,y){
+   fetch('/getUserByToken')
+    .then(response => response.json())
+    .then((data)=>{
+        
+        socket.emit('gameStart', {user:data,x:x,y:y})
+  
+    });
+   
+}
+
 
 function test(msg, reciever, chatroom_id){
     // console.log("Client msg "+ msg)
@@ -46,4 +61,22 @@ async function getChatRoomId(reciever){
             console.log(err)
         })
     return chatId
+}
+
+async function getUserId(email){
+    let userID = await fetch('/getUserByEmail', {
+        method: 'POST', // or 'PUT'
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({email:email}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // console.log("User "  +data)
+            return data
+        }).catch(err=>{
+            console.log(err)
+        })
+    return userID
 }

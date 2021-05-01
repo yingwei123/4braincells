@@ -1,0 +1,157 @@
+<html>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src ="/socket.io/socket.io.js"> </script>
+    <link rel="stylesheet" href="app.css">
+    <script src="./web.js"></script>
+    <style>
+        body {
+            margin: 0;
+        }
+        canvas {
+            border:1px solid #d3d3d3;
+            background-color: #f1f1f1;
+        }
+    </style>
+    
+   <script >
+       x = Math.floor(Math.random() * 100) + 1
+        y = Math.floor(Math.random() * 100) + 1
+
+       start(x,y)
+       myGamePiece = new component(20,20, "red", x, y);
+
+      function startGame() {
+        var canvas = document.createElement("CANVAS");
+        canvas.id = "canvas"
+        var ctx = canvas.getContext("2d");
+        canvas.width = 600
+        canvas.height = 600
+        ctx.beginPath();
+        ctx.rect(myGamePiece.x, myGamePiece.y, myGamePiece.width, myGamePiece.height);
+        ctx.fillStyle = myGamePiece.color;
+        ctx.fill();
+
+       
+        
+
+        document.getElementById("container").appendChild(canvas);
+    }
+
+    function component(width, height, color, x, y) {
+        this.width = width;
+        this.height = height;
+        this.x = x;
+        this.y = y;    
+        this.color = color
+    
+    }   
+       
+        
+          
+        
+
+       async function getKeyAndMove(e){				
+		var key_code=e.which||e.keyCode;
+		switch(key_code){
+			case 37: //left arrow key
+				await moveLeft();
+				break;
+			case 38: //Up arrow key
+				await moveUp();
+				break;
+			case 39: //right arrow key
+				await moveRight();
+				break;
+			case 40: //down arrow key
+				await moveDown();
+				break;						
+		}
+    }
+    async function moveLeft(){
+        var c = document.getElementById("canvas");
+        var ctx = c.getContext("2d");
+
+        ctx.clearRect(myGamePiece.x, myGamePiece.y, myGamePiece.width, myGamePiece.height);
+        ctx.beginPath();
+        ctx.rect(myGamePiece.x -3, myGamePiece.y, myGamePiece.width, myGamePiece.height);
+        ctx.fillStyle = myGamePiece.color;
+        myGamePiece.x = myGamePiece.x -3
+        ctx.fill();
+        await fetch('/getUserByToken')
+            .then(response => response.json())
+            .then((data)=>{
+                
+                socket.emit('movement', {user:data,x:myGamePiece.x,y:myGamePiece.y})
+        
+            });
+        console.log("Left")
+    }
+    async function moveRight(){
+        var c = document.getElementById("canvas");
+        var ctx = c.getContext("2d");
+
+        ctx.clearRect(myGamePiece.x, myGamePiece.y, myGamePiece.width, myGamePiece.height);
+        ctx.beginPath();
+        ctx.rect(myGamePiece.x +3, myGamePiece.y, myGamePiece.width, myGamePiece.height);
+        ctx.fillStyle = myGamePiece.color;
+        myGamePiece.x = myGamePiece.x +3
+        ctx.fill();
+        await fetch('/getUserByToken')
+            .then(response => response.json())
+            .then((data)=>{
+                
+                socket.emit('movement', {user:data,x:myGamePiece.x,y:myGamePiece.y})
+        
+            });
+        console.log("Right")
+    }
+    async function moveUp(){
+        var c = document.getElementById("canvas");
+        var ctx = c.getContext("2d");
+
+        ctx.clearRect(myGamePiece.x, myGamePiece.y, myGamePiece.width, myGamePiece.height);
+        ctx.beginPath();
+        ctx.rect(myGamePiece.x, myGamePiece.y -3, myGamePiece.width, myGamePiece.height);
+        ctx.fillStyle = myGamePiece.color;
+        myGamePiece.y = myGamePiece.y -3
+        ctx.fill();
+       await fetch('/getUserByToken')
+            .then(response => response.json())
+            .then((data)=>{
+                
+                socket.emit('movement', {user:data,x:myGamePiece.x,y:myGamePiece.y})
+        
+            });
+        console.log("Up")
+    }
+    async function moveDown(){
+        var c = document.getElementById("canvas");
+        var ctx = c.getContext("2d");
+
+        ctx.clearRect(myGamePiece.x, myGamePiece.y, myGamePiece.width, myGamePiece.height);
+        ctx.beginPath();
+        ctx.rect(myGamePiece.x, myGamePiece.y+3, myGamePiece.width, myGamePiece.height);
+        ctx.fillStyle = myGamePiece.color;
+        myGamePiece.y = myGamePiece.y +3
+        ctx.fill();
+        await fetch('/getUserByToken')
+            .then(response => response.json())
+            .then((data)=>{
+                
+                socket.emit('movement', {user:data,x:myGamePiece.x,y:myGamePiece.y})
+        
+            });
+        console.log("Down")
+    }
+    
+    </script>
+  <body onload="startGame()"></body>
+
+  <div id ="container"></div>
+
+  <body onkeydown='getKeyAndMove(event)'>
+   <div>Testing</div>
+</body>
+
+
+</html>

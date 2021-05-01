@@ -23,6 +23,10 @@ module.exports = app =>{
         res.render('blank.ejs')
     } )
 
+    app.get("/game", (req,res)=>{
+        res.render("game.ejs")
+    })
+
     app.get("/home", async (req,res)=>{
         const token = req.cookies['token'];
         const data =  await userFunc.getUserHomeDetail(token);

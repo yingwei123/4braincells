@@ -10,7 +10,7 @@
     chatRoom_id = null
     
     fetch('/allEmail').then(response =>response.json())
-    .then((data) =>{
+    .then(async(data) => {
         console.log(data)
         for( var i = 0; i<data.userList.length;i++){
             var btn = document.createElement("BUTTON");
@@ -71,6 +71,9 @@
             }
             document.getElementById("loader-parent").append(btn)
             var div1 = document.createElement("div");
+            let userID = await getUserId(data.userList[i])
+            div1.id = userID
+            div1.innerHTML = "Offline"
             document.getElementById("loader-parent").append(div1)
         }
         console.log(data)
@@ -153,6 +156,13 @@
 
 
 <button onclick ="test()">Stuff</button>
+
+
+<br>
+<br>
+<form action="/game" method="get">
+    <button>Game</button>
+  </form>
 
 
 </html>

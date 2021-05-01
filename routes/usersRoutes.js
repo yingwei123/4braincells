@@ -83,6 +83,15 @@ module.exports = app =>{
       }
     })
 
+    app.post("/getUserByEmail",async(req,res)=>{
+        try{
+            let user = await userFunc.getUserByEmail(req.body.email)
+            res.send(user._id)
+        }catch(err){
+            res.send(err)
+        }
+    })
+
     //sign up using email, password, and cpass, not currently in use
     /*app.post("/signup", (req,res)=>{
         try{
