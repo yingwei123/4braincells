@@ -40,8 +40,12 @@ io.on('connection',async socket=>{
 
     
     socket.on('init',message =>{
-        console.log(message.user + " socket is added")
-        userSockets[message.user.toString()] = socket;
+        
+        if( userSockets[message.user.toString()] == undefined){
+          
+            userSockets[message.user.toString()] = socket;
+            console.log(message.user + " socket is added")
+        }
         for (var key in userSockets) {
     
            userSockets[key].emit('status', {user : message.user, online:"online"})
@@ -60,15 +64,42 @@ io.on('connection',async socket=>{
     })
 
     socket.on('gameStart', async message=>{
-        userPlayer[message.user.toString()] = {x:message.x, y:message.y};
-       // for (var key in userPlayer) {
-        console.log(message)
-            //userSockets[key].emit('status', {user : message.user, online:"online"})
-         //}
+         userPlayer[message.user] = {x:message.x, y:message.y};
+         if(userSockets[message.user] == undefined){
+            userSockets[message.user.toString()] = socket;
+         }
+        //  userSockets[message.user.toString()] = socket;
+    //    for (var key in userPlayer) {
+    //         // userPlayer[key]
+
+    //         console.log("This Key " + key + " Length = "+ userSockets.length)
+    //         userSockets[message.user].emit('newConnect', {user : key, x:userPlayer[key].x,y:userPlayer[key].y})
+    //      }
+         positions = []
+        for(var key in userPlayer){
+            positions.push({user:key, x:userPlayer[key].x, y:userPlayer[key].y})
+            // console.log("User Socket "+ key +" Caller key = "+ message.user)
+        }
+        for(var key in userPlayer){
+           userSockets[key].emit('newConnect',positions)
+        }
+        // console.log(positions)
     })
 
     socket.on('movement', async message=>{
         userPlayer[message.user]= {x:message.x, y:message.y}
+        // for (var key in userPlayer) {
+        //     userSockets[key].emit('update', message)
+            
+        //  }
+        positions = []
+        for(var key in userPlayer){
+            positions.push({user:key, x:userPlayer[key].x, y:userPlayer[key].y})
+            // console.log("User Socket "+ key +" Caller key = "+ message.user)
+        }
+        for(var key in userPlayer){
+           userSockets[key].emit('newConnect',positions)
+        }
         console.log(message)
     })
 
@@ -87,6 +118,16 @@ io.on('connection',async socket=>{
     
             userSockets[key].emit('status', {user : userToRemove, online:"offline"})
          }
+         stuff = userPlayer[userToRemove]
+         delete userPlayer[userToRemove]
+         if(stuff != undefined){
+         for(var key in userPlayer){
+             if(key != userToRemove){
+             userSockets[key].emit('leftGame',{user:userToRemove, x:stuff.x,y:stuff.y} )
+             }
+         }
+        }
+         
     })
 
     
