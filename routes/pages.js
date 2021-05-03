@@ -11,6 +11,10 @@ module.exports = app =>{
         res.render("translate.ejs")
     })
 
+    app.get("/profilepictureupload",(req,res)=>{
+        res.render("picturechange.ejs")
+    } )
+
     app.get("/import",(req,res) =>{
         res.render("import.ejs")
     })

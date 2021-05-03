@@ -1,11 +1,60 @@
 const e = require('express');
 const userFunc = require("./userFunc.js")
 const tokenFunc = require("./tokenFunc.js")
+const multer = require('multer');
+const path = require('path');
+const Users = require('../models/Users');
+
+const storage = multer.diskStorage({
+    destination: './views/uploads/',
+    filename: function(req, file, cb){
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: storage
+}).single('ProPic');
 
 
 module.exports = app =>{
+//User changes their profile picture
+    app.post('/upload', async(req, res) =>{
+        upload(req, res, async (err) => {
+            if(err){
+                res.render('picturechange.ejs', {
+                    msg: err
+                });
+            }
+            
+            else{
+                if(req.file == undefined){
+                    res.render('picturechange.ejs', {
+                        msg: 'Error: No File Selected'
+                    });
+                }
+                else{
+                    token = req.cookies["token"]
+                    console.log(token)
+                    user = await tokenFunc.getUserByToken(token)
+                    console.log(user)
+                    try{
+                        id = user._id;
+                        await Users.findOneAndUpdate({_id:id}, {profilePic:`/uploads/${req.file.filename}`});
+                    }
+                    catch(err){
+                        console.log(err, "error from file")
+                    }
+                    res.render('picturechange.ejs', {
+                        msg: 'File Uploaded!',
+                        file: `./uploads/${req.file.filename}`
+                    });
+                }
+            }
+        })
+    });
 
-//user register(currently using for sign up)
+
     app.post("/signup", async(req,res) =>{
         try{
             const email = req.body.email

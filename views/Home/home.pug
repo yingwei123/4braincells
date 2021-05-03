@@ -15,9 +15,10 @@ html
     body
         div.leftContainer
             div.userProfile
-                div.userProfileImageContainer
-                    img.rounded.userProfile(src=user.profilePic)
-                    i.fas.fa-camera.fa-lg.editProfileImage
+                a(href='/profilepictureupload')
+                    div.userProfileImageContainer
+                        img.rounded.userProfile(src=user.profilePic)
+                        i.fas.fa-camera.fa-lg.editProfileImage
                 h3.userName= user.firstname + " " + user.lastname
             div.searchContainer
                 div.iconContainer
