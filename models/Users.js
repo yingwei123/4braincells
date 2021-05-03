@@ -35,6 +35,10 @@ const UsersSchema = new mongoose.Schema({
         type : [String],
         default : []
     },
+    online :{
+        type : Boolean,
+        default:false
+    }
 });
 
 const Users = mongoose.model('Users',UsersSchema);

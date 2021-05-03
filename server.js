@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const socketio = require("socket.io")
 const http = require("http")
 const chatFunc = require('./routes/chatFunc.js');
+const Users = require('./models/Users')
 require('dotenv').config()
 
 
@@ -39,16 +40,22 @@ io.on('connection',async socket=>{
     console.log("Socket Connected")
 
     
-    socket.on('init',message =>{
+    socket.on('init',async message =>{
         
         if( userSockets[message.user.toString()] == undefined){
           
             userSockets[message.user.toString()] = socket;
             console.log(message.user + " socket is added")
         }
+         await Users.findByIdAndUpdate(message.user,{online:true})
+
+        console.log(await Users.findById(message.user))
+        
         for (var key in userSockets) {
     
            userSockets[key].emit('status', {user : message.user, online:"online"})
+        //    userSockets[message.user].emit('status', {user:key, online:"online"})
+           
         }
      
     })
@@ -100,15 +107,17 @@ io.on('connection',async socket=>{
         for(var key in userPlayer){
            userSockets[key].emit('newConnect',positions)
         }
-        console.log(message)
+        // console.log(message)
     })
 
-    socket.on('disconnect', () =>{
+    socket.on('disconnect', async() =>{
         userToRemove = "user id"
         for (var key in userSockets) {
             if(userSockets[key] == socket){
                 console.log(key  + " socket is removed")
                 userToRemove = key
+                await Users.findByIdAndUpdate(key,{online:false})
+                console.log(await Users.findById(key))
                 delete userSockets[key];
                 break;
             }
