@@ -48,6 +48,7 @@ module.exports = app =>{
         }
       })
       
+      //delete all token
       app.get("/deleteAllToken",async(req,res)=>{
         try{
           let del = await tokenFunc.clearTokens()

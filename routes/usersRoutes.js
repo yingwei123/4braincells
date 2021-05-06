@@ -97,10 +97,10 @@ module.exports = app =>{
     })
 
     //return all users for testing purposes
-    app.get("/adminTest", async(req,res)=>{
-        let allUsers = await userFunc.getAllUsers()
-        res.send(allUsers)
-    })
+    // app.get("/adminTest", async(req,res)=>{
+    //     let allUsers = await userFunc.getAllUsers()
+    //     res.send(allUsers)
+    // })
 
     //get the user by id
     app.post("/getUserById",async(req,res) =>{
@@ -108,6 +108,7 @@ module.exports = app =>{
         let users = await userFunc.getUserById(req.body.id)
         res.send(users)
     })
+    //get user by token
     app.get("/getUserByToken", async(req,res) =>{
         try{
             let user = await tokenFunc.getUserByToken(req.cookies['token'])
@@ -116,10 +117,12 @@ module.exports = app =>{
             res.send(err)
         }
     })
-    app.get("/deleteAll",async(req,res)=>{
-        let deleteAll = await userFunc.deleteAll()
-        res.send(200)
-    })
+
+    //delete all users
+    // app.get("/deleteAll",async(req,res)=>{
+    //     let deleteAll = await userFunc.deleteAll()
+    //     res.send(200)
+    // })
 
     //get all email, need valid token
     app.get("/allEmail", async(req,res) =>{
@@ -132,6 +135,7 @@ module.exports = app =>{
       }
     })
 
+    //get user by email
     app.post("/getUserByEmail",async(req,res)=>{
         try{
             let user = await userFunc.getUserByEmail(req.body.email)
