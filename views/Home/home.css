@@ -34,6 +34,9 @@ body{
     right: 10px;
     color: white;
 }
+.boldFont{
+    font-weight: bold;
+}
 .messageContentTextContainer{
     background: #0086f4;
     padding: 1px 15px;
@@ -57,7 +60,19 @@ body{
 .iconContainer{
     width: 90%;
 }
+.gameIcon{
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    color: dodgerblue;
+    cursor: pointer;
+}
+.userProfileImage{
+    width: 75px;
+    height: 75px;
+}
 .userProfile{
+    width: 100%;
     margin-top: 10px;
     display: flex;
     flex-direction: column;
@@ -121,7 +136,7 @@ body{
     justify-content: center;
 }
 .userProfile{
-    width: 65px;
+
 }
 .recentTime{
     margin-bottom: 10px;

@@ -109,6 +109,7 @@ async function getUserHomeDetail(token){
     const userToFind = await Users.findById(exits.user)
     const chatList = []
     const chatting = new Set()
+    const userChatList = []
     for (let i = 0; i< userToFind.chatRooms.length; i++){
         const chatInstance = await ChatRooms.findById(userToFind.chatRooms[i])
         const receiverP = chatInstance.PersonOne.id === userToFind._id.toString() ? chatInstance.PersonTwo.id : chatInstance.PersonOne.id;
@@ -124,6 +125,11 @@ async function getUserHomeDetail(token){
                 online: receiver.online
             }
         }
+        userChatList.push({
+            id: chatInstance._id,
+            receiver: receiver._id
+
+        })
         chatList.push(chatRes);
         chatting.add(receiverP)
     }
@@ -132,7 +138,7 @@ async function getUserHomeDetail(token){
     const onlineUsers = await Users.find({online: true})
     for (let i = 0; i< onlineUsers.length; i++){
         const onlineUser = onlineUsers[i]
-        if (!chatting.has(onlineUser._id.toString()) && onlineUser._id !== userToFind._id){
+        if (!chatting.has(onlineUser._id.toString()) && onlineUser._id.toString() !== userToFind._id.toString()){
             online.push({
                 id: onlineUser._id,
                 firstname: onlineUser.firstname,
@@ -142,6 +148,19 @@ async function getUserHomeDetail(token){
             })
         }
     }
-    return {user: userToFind, chat: chatList, onlineUsers: online}
+    console.log(online);
+
+    return {
+        user: {
+            id: userToFind._id,
+            firstname: userToFind.firstname,
+            lastname: userToFind.lastname,
+            profilePic: userToFind.profilePic,
+            chatRooms: userChatList,
+            online: true
+        },
+        chat: chatList,
+        onlineUsers: online
+    }
 }
 module.exports = {createUser, getUserById, getAllUsers, login, getAllEmail,getUserByEmail,deleteAll, getUserHomeDetail}

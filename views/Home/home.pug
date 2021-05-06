@@ -1,6 +1,4 @@
 doctype html
-- let messages = [{id: 123, name:'a jan', recent_message: 'hey whats hey whats hey whats hey whats hey whats ', profile:'../asset/mockLogo.png', time:'3:42 PM'}]
-- let individualMessages = [{id: 153, receiver:'jan', sender: 'kevin', content:'; sk', time:'3:42 PM', profile:'../asset/mockLogo.png', sent: true}, {id: 1523, receiver:'jan', sender: 'kevin', content:'hellow sk', time:'3:42 PM', profile:'../asset/mockLogo.png', sent: true}, {id: 133, receiver:'me', sender: 'kevin', content:'hellow sk', time:'3:42 PM', profile:'../asset/mockLogo.png', sent: false}]
 html
     head
         title Message App
@@ -13,17 +11,19 @@ html
         link(href='https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,800;1,800&display=swa', rel='stylesheet')
     body
         div.leftContainer
+            a(href='/game')
+                i.fas.fa-gamepad.gameIcon.fa-2x
             div.userProfile
-                a(href='/profilepictureupload')
-                    div.userProfileImageContainer
-                        img.rounded.userProfile(src=user.profilePic)
+                div.userProfileImageContainer
+                    img.rounded.userProfileImage(src=user.profilePic)
+                    a(href='/profilepictureupload')
                         i.fas.fa-camera.fa-lg.editProfileImage
                 h3.userName= user.firstname + " " + user.lastname
-            div.searchContainer
+            //div.searchContainer
                 div.iconContainer
                     i.fas.fa-search.fa-lg.searchIcon
                     input.searchInput(placeholder="Search")
-            div.recentMessageContainer
+            div.recentMessageContainer#recentMessageContainer
                 each chatRoom in chat
                     div.recentMessageBlock.clickable(id=chatRoom.id data-chat=chatRoom.id onclick="chatClick(this)")
                         div.recentMessageSplit
@@ -35,8 +35,6 @@ html
                                 else
                                     p.recentMessage= chatRoom.messages[chatRoom.messages.length-1].content
                             div.timeNotification
-                                //p.recentTime= message.time
-
                 each user in onlineUsers
                     div.recentMessageBlock.clickable(id=user.id  onclick="chatClick(this)")
                         div.recentMessageSplit

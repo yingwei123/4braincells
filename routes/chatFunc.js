@@ -11,8 +11,6 @@ const { findByIdAndUpdate } = require('../models/ChatRooms')
 
 
 async function incommingMessage(id, personB, message,chatroom_id){
-  let personB_user = await Users.findById(personB)
-  console.log(id + " send "+ message + " to "+ personB_user._id + " room = "+ chatroom_id)
   let addedMessage = await addMessage(chatroom_id,message,id)
   console.log(addedMessage)
   return addedMessage
@@ -116,7 +114,6 @@ async function getChatRecord(id, user) {
   const room = await ChatRooms.findById(id);
   const receiver = user._id.toString() === room.PersonOne.id ? room.PersonTwo.id : room.PersonOne.id;
   const receiverBackend = await Users.findById(receiver);
-  console.log(room)
   return {
     id: room._id,
     messages: room.Messages,

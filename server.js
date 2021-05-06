@@ -37,26 +37,30 @@ let rooms = new Set()
 userPlayer ={}
 
 io.on('connection',async socket => {
-    console.log("Socket Connected")
     socket.on('init',async user => {
-        socket.join(user);
-        rooms.add(user);
-        await Users.findByIdAndUpdate(user,{online:true});
-        for (let key in userSockets) {
-           userSockets[key].emit('status', {user : user, online:"online"});
+        socket.userId = user;
+        const getUser = await Users.findByIdAndUpdate(user,{online:true});
+        const userRes = {
+            id: getUser._id,
+            online: getUser.online,
+            firstname: getUser.firstname,
+            lastname: getUser.lastname,
+            profilePic: getUser.profilePic
         }
+        for (let key in userSockets) {
+            userSockets[key].emit('status', {user : userRes, online: true});
+        }
+        userSockets[user] = socket;
 
     })
 
     socket.on('newChatRoom', message => {
-        if (rooms.has(message.receiver)) io.in(message.receiver).emit('newChatRoom', message);
+        if (userSockets.hasOwnProperty(message.receiver)) userSockets[message.receiver].emit('newChatRoom', message);
     })
     socket.on('message', async message => {
-        console.log(message);
-        console.log(io.sockets.adapter.rooms);
-        //let msg = await chatFunc.incommingMessage(message.user, message.receiver,message.msg,message.chatroom_id);
-        io.in(message.user).emit('message', message);
-        if (rooms.has(message.receiver)) socket.in(message.receiver).emit('message', message);
+        let msg = await chatFunc.incommingMessage(message.user, message.receiver,message.msg,message.chatroom_id);
+        userSockets[message.user].emit('message', message);
+        if ( userSockets.hasOwnProperty(message.receiver))  userSockets[message.receiver].emit('message', message);
     })
 
     socket.on('gameStart', async message=>{
@@ -100,30 +104,23 @@ io.on('connection',async socket => {
     })
 
     socket.on('disconnect', async() =>{
-        userToRemove = "user id"
-        for (var key in userSockets) {
-            if(userSockets[key] == socket){
-                console.log(key  + " socket is removed")
-                userToRemove = key
-                await Users.findByIdAndUpdate(key,{online:false})
-                console.log(await Users.findById(key))
-                delete userSockets[key];
-                break;
+        rooms.delete(socket.userId)
+        const userToRemove = socket.userId
+
+        if(userSockets.hasOwnProperty(socket.userId)){
+            console.log(socket.userId  + " socket is removed")
+            const userRes = await Users.findByIdAndUpdate(socket.userId,{online:false})
+            delete userSockets[socket.userId];
+            for (let key in userSockets) {
+                userSockets[key].emit('status', {user : userRes, online: false});
             }
-
-         }
-         for (var key in userSockets) {
-
-            userSockets[key].emit('status', {user : userToRemove, online:"offline"})
-         }
-         stuff = userPlayer[userToRemove]
-         delete userPlayer[userToRemove]
-         if(stuff != undefined){
-         for(var key in userPlayer){
-             if(key != userToRemove){
-             userSockets[key].emit('leftGame',{user:userToRemove, x:stuff.x,y:stuff.y} )
-             }
-         }
+        }
+        const stuff = userPlayer[userToRemove]
+        if(stuff){
+            delete userPlayer[userToRemove]
+            for(let key in userSockets){
+                userSockets[key].emit('leftGame',{user:userToRemove, x:stuff.x,y:stuff.y} )
+            }
         }
 
     })

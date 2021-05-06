@@ -10,11 +10,9 @@ socket.on('connect', async function() {
     await fetch('/getUserByToken')
     .then(response => response.json())
     .then((data)=>{
-        // console.log(data)
-        socket.emit('init', {user:data})
+        console.log("init" + data)
+        socket.emit('init', data)
     });
-
-    
 });
 socket.on('leftGame', async message =>{
     var c = document.getElementById("canvas");
@@ -51,7 +49,7 @@ socket.on('status',message=>{
      console.log(start)
     //  await addPlayer(x,y,"red",20,20, start.user)
    return start
-   
+
 }
 
 async function initialStart(x,y){
@@ -74,7 +72,7 @@ function test(msg, reciever, chatroom_id){
     .then((data)=>{
         socket.emit('msg', {user:data, msg:msg, reciever:reciever, chatroom_id:chatroom_id,date: date.toTimeString()})
     });
-    
+
 }
 
 async function getChatRoomId(reciever){
@@ -122,15 +120,15 @@ function component(width, height, color, x, y) {
     this.width = width;
     this.height = height;
     this.x = x;
-    this.y = y;    
+    this.y = y;
     this.color = color
 
-}   
-   
-   async function getKeyAndMove(e){			
-  
+}
+
+   async function getKeyAndMove(e){
+
     // console.log(globalUserID)
-   
+
     var key_code=e.which||e.keyCode;
     switch(key_code){
         case 37: //left arrow key
@@ -144,7 +142,7 @@ function component(width, height, color, x, y) {
             break;
         case 40: //down arrow key
             await moveDown(globalUserID);
-            break;						
+            break;
     }
 }
 async function moveLeft(userID){
@@ -154,7 +152,7 @@ async function moveLeft(userID){
             if(players[userID].x-3 > 0 && players[userID].x-3<597){
                 await  socket.emit('movement', {user:userID,x:players[userID].x-3,y:players[userID].y})
             }
-   
+
 }
 async function moveRight(userID){
     var c = document.getElementById("canvas");
@@ -164,7 +162,7 @@ async function moveRight(userID){
         if(players[userID].x+3 > 0 && players[userID].x+3<597){
             await  socket.emit('movement', {user:userID,x:players[userID].x+3,y:players[userID].y})
         }
-   
+
 }
 async function moveUp(userID){
     var c = document.getElementById("canvas");
@@ -174,18 +172,18 @@ async function moveUp(userID){
             if(players[userID].y-3 > 0 && players[userID].y-3<597){
                 await  socket.emit('movement', {user:userID,x:players[userID].x,y:players[userID].y-3})
             }
-    
+
 
 }
 async function moveDown(userID){
     var c = document.getElementById("canvas");
     var ctx = c.getContext("2d");
 
- 
+
         if(players[userID].y+3 > 0 && players[userID].y+3<597){
            await  socket.emit('movement', {user:userID,x:players[userID].x,y:players[userID].y+3})
         }
-  
+
 }
 
 async function addPlayer(x,y,color,width,height, id){
@@ -200,7 +198,7 @@ async function addPlayer(x,y,color,width,height, id){
     myGamePiece = new component(width,height, color, x, y);
     players[id] = myGamePiece
 
-    
+
     ctx.beginPath();
     ctx.rect(myGamePiece.x, myGamePiece.y, myGamePiece.width, myGamePiece.height);
     ctx.fillStyle = myGamePiece.color;

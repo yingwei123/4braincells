@@ -63,7 +63,6 @@ module.exports = app =>{
             const user = await tokFunc.getUserByToken(req.cookies['token'])
             if (user){
                 const response = await chatFunc.getChatRecord(req.body.id, user)
-                console.log(response)
                 res.send(response);
             }else {
                 res.sendStatus(404);
@@ -73,6 +72,7 @@ module.exports = app =>{
             res.sendStatus(404);
         }
     })
+
 
     app.post("/newChat", async(req,res)=>{
         try{
