@@ -10,8 +10,9 @@ RUN apt-get -y install curl gnupg
 RUN curl -sL https://deb.nodesource.com/setup_12.x| bash
 RUN apt-get update --fix-missing
 RUN apt-get install -y nodejs
-
-
+RUN npm install pug
+RUN npm install body-parser
+RUN npm install cookie-parser
 COPY . .
 
 
