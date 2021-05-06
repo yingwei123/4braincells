@@ -1,7 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const app = express();
-const bodyparser = require('body-parser')
+const bodyParser = require('body-parser')
 const path = require('path')
 const mongoose = require('mongoose');
 const socketio = require("socket.io")
@@ -10,9 +10,8 @@ const chatFunc = require('./routes/chatFunc.js');
 const Users = require('./models/Users')
 require('dotenv').config()
 
-
-
-app.use(bodyparser.json())
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'views')));
 
@@ -33,46 +32,36 @@ mongoose.connect(process.env.MONGODB_URI||'mongodb://localhost:27017/4braincells
 mongoose.set('useFindAndModify', false);
 
 let userSockets ={}
+let rooms = new Set()
 
 userPlayer ={}
 
-io.on('connection',async socket=>{
+io.on('connection',async socket => {
     console.log("Socket Connected")
-
-    
-    socket.on('init',async message =>{
-        
-        if( userSockets[message.user.toString()] == undefined){
-          
-            userSockets[message.user.toString()] = socket;
-            console.log(message.user + " socket is added")
+    socket.on('init',async user => {
+        socket.join(user);
+        rooms.add(user);
+        await Users.findByIdAndUpdate(user,{online:true});
+        for (let key in userSockets) {
+           userSockets[key].emit('status', {user : user, online:"online"});
         }
-         await Users.findByIdAndUpdate(message.user,{online:true})
 
-        console.log(await Users.findById(message.user))
-        
-        for (var key in userSockets) {
-    
-           userSockets[key].emit('status', {user : message.user, online:"online"})
-        //    userSockets[message.user].emit('status', {user:key, online:"online"})
-           
-        }
-     
     })
 
-    socket.on('msg', async message=>{
-
-        // socket.broadcast.emit("message", message)
-        let msg = await chatFunc.incommingMessage(message.user, message.reciever,message.msg, message.date,message.chatroom_id)
-
-            userSockets[msg.receiver].emit('message',msg)
-            userSockets[message.user].emit('message',msg)
-        
+    socket.on('newChatRoom', message => {
+        if (rooms.has(message.receiver)) io.in(message.receiver).emit('newChatRoom', message);
+    })
+    socket.on('message', async message => {
+        console.log(message);
+        console.log(io.sockets.adapter.rooms);
+        //let msg = await chatFunc.incommingMessage(message.user, message.receiver,message.msg,message.chatroom_id);
+        io.in(message.user).emit('message', message);
+        if (rooms.has(message.receiver)) socket.in(message.receiver).emit('message', message);
     })
 
     socket.on('gameStart', async message=>{
          userPlayer[message.user] = {x:message.x, y:message.y};
-         if(userSockets[message.user] == undefined){
+         if(userSockets[message.user] === undefined){
             userSockets[message.user.toString()] = socket;
          }
         //  userSockets[message.user.toString()] = socket;
@@ -97,7 +86,7 @@ io.on('connection',async socket=>{
         userPlayer[message.user]= {x:message.x, y:message.y}
         // for (var key in userPlayer) {
         //     userSockets[key].emit('update', message)
-            
+
         //  }
         positions = []
         for(var key in userPlayer){
@@ -121,10 +110,10 @@ io.on('connection',async socket=>{
                 delete userSockets[key];
                 break;
             }
-            
+
          }
          for (var key in userSockets) {
-    
+
             userSockets[key].emit('status', {user : userToRemove, online:"offline"})
          }
          stuff = userPlayer[userToRemove]
@@ -136,10 +125,10 @@ io.on('connection',async socket=>{
              }
          }
         }
-         
+
     })
 
-    
+
 })
 
 

@@ -39,17 +39,10 @@ const mongoose = require('mongoose');
            default :"",
        },
        sender:{
-
-               type: String,
-               required: true
-
+           type: String,
+           required: true
        },
-       receiver: {
 
-               type: String,
-               required: true
-
-       },
        timestamp: {
            type: Date,
            required: true

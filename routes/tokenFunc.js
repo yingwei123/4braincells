@@ -42,14 +42,14 @@ async function logOut(token_id){
 
 async function getUserByToken(token_id){
     try{
-        token = await Tokens.findById(token_id)
+        const token = await Tokens.findById(token_id)
         if(token.active == false){
             console.log("Token not active")
             return null
         }
-        user_id = token.user
+        const user_id = token.user
 
-        userToFind = await Users.findById(user_id)
+        const userToFind = await Users.findById(user_id)
 
 
         return userToFind

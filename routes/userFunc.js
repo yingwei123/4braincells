@@ -110,27 +110,38 @@ async function getUserHomeDetail(token){
     const chatList = []
     const chatting = new Set()
     for (let i = 0; i< userToFind.chatRooms.length; i++){
-        const chatInstance = await ChatRooms.findOne({_id: userToFind.chatRooms[0]})
-        const receiver = chatInstance.PersonOne.id === userToFind._id ? chatInstance.PersonTwo.id : chatInstance.PersonOne.id
-        chatList.push(chatInstance);
-        chatting.add(receiver)
+        const chatInstance = await ChatRooms.findById(userToFind.chatRooms[i])
+        const receiverP = chatInstance.PersonOne.id === userToFind._id.toString() ? chatInstance.PersonTwo.id : chatInstance.PersonOne.id;
+        const receiver = await Users.findById(receiverP);
+        const chatRes = {
+            id: chatInstance._id,
+            messages: chatInstance.Messages,
+            receiver: {
+                id: receiver._id,
+                firstname: receiver.firstname,
+                lastname: receiver.lastname,
+                profilePic: receiver.profilePic,
+                online: receiver.online
+            }
+        }
+        chatList.push(chatRes);
+        chatting.add(receiverP)
     }
     //chatList.sort(function(a,b){return b.lastActivity.getTime() - a.lastActivity.getTime()});
-    let receiver = {}
-    if (chatList.length !== 0){
-        const latestMessage = chatList[0];
-        const receiverID = latestMessage.PersonOne.id === userToFind._id ? latestMessage.PersonTwo.id : latestMessage.PersonOne.id
-        receiver = await Users.findById(receiverID)
-    }
     const online = []
-    const tokens = await Tokens.find({})
-    console.log(tokens)
-    for (let i = 0; i< tokens.length; i++){
-        const onlineUser = await Users.findOne({_id: tokens[i].user})
-        if (!chatting.has(onlineUser) && onlineUser._id !== userToFind._id){
-            online.push(onlineUser)
+    const onlineUsers = await Users.find({online: true})
+    for (let i = 0; i< onlineUsers.length; i++){
+        const onlineUser = onlineUsers[i]
+        if (!chatting.has(onlineUser._id.toString()) && onlineUser._id !== userToFind._id){
+            online.push({
+                id: onlineUser._id,
+                firstname: onlineUser.firstname,
+                lastname: onlineUser.lastname,
+                profilePic: onlineUser.profilePic,
+                online: onlineUser.online
+            })
         }
     }
-    return {user: userToFind, chat: chatList, onlineUsers: online, receiver: receiver}
+    return {user: userToFind, chat: chatList, onlineUsers: online}
 }
 module.exports = {createUser, getUserById, getAllUsers, login, getAllEmail,getUserByEmail,deleteAll, getUserHomeDetail}

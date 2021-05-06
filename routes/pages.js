@@ -1,5 +1,6 @@
 const e = require('express');
 const userFunc = require("./userFunc.js")
+const Tokens = require('../models/Tokens')
 module.exports = app =>{
 
 
@@ -37,8 +38,9 @@ module.exports = app =>{
         res.render('./Home/home.pug', data)
     })
 
-    app.get("/", (req,res)=>{
-        if(req.cookies['token']){
+    app.get("/", async (req,res)=>{
+        const person = await Tokens.findById(req.cookies['token'])
+        if(person){
             res.redirect(302, '/home');
         }else {
             res.render('./Login/signin.pug')

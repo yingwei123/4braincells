@@ -1,4 +1,6 @@
 const Users = require('../models/Users')
+const ChatRooms = require('../models/ChatRooms')
+const tokFunc = require('./tokenFunc')
 const chatFunc = require('./chatFunc')
 const e = require('express');
 
@@ -55,6 +57,33 @@ module.exports = app =>{
             res.send(err)
         }
     })
+    app.post("/getChatRecords", async(req,res)=>{
+
+        try{
+            const user = await tokFunc.getUserByToken(req.cookies['token'])
+            if (user){
+                const response = await chatFunc.getChatRecord(req.body.id, user)
+                console.log(response)
+                res.send(response);
+            }else {
+                res.sendStatus(404);
+            }
+        }catch(err){
+            console.log(err)
+            res.sendStatus(404);
+        }
+    })
+
+    app.post("/newChat", async(req,res)=>{
+        try{
+            let response = await chatFunc.createChatRoom(req.body.sender, req.body.receiver)
+            console.log(response)
+            res.send(response)
+        }catch(err){
+            console.log(err)
+            res.sendStatus(404)
+        }
+    })
 
     app.post("/findChatroom", async(req,res)=>{
         try{
@@ -62,6 +91,7 @@ module.exports = app =>{
             console.log(x)
             res.send(x)
         }catch(err){
+            console.log(err)
             res.send(err)
         }
     })
