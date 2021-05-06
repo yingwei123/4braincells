@@ -4,6 +4,7 @@ const tokenFunc = require("./tokenFunc.js")
 const bcrypt = require('bcryptjs');
 const ChatRooms = require("../models/ChatRooms");
 
+//Create a user 
 async function createUser(email,password,fname,lname){
     try{
         let exist = await Users.findOne({ email });
@@ -31,6 +32,7 @@ async function createUser(email,password,fname,lname){
       }
 }
 
+//get user by id
 async function getUserById(id){
     try{
         user = await Users.findById(id)
@@ -42,16 +44,18 @@ async function getUserById(id){
 
 }
 
-async function getAllUsers(){
-    try{
-        allUser = await Users.find({})
-        return allUser
-      }catch(err){
-        return error
-      }
+//get all users for testing purposes
+// async function getAllUsers(){
+//     try{
+//         allUser = await Users.find({})
+//         return allUser
+//       }catch(err){
+//         return error
+//       }
 
-}
+// }
 
+//login using email and password
 async function login(email,password){
     try{
         let userToGet = await Users.findOne({email:email})
@@ -71,6 +75,7 @@ async function login(email,password){
       }
 }
 
+//get all emails
 async function getAllEmail(tok){
     try{
         valid = await tokenFunc.determineValid(tok)
@@ -87,6 +92,7 @@ async function getAllEmail(tok){
       }
 }
 
+//get all users by email
 async function getUserByEmail(email){
   try{
     let users = await Users.findOne({email:email})
@@ -95,15 +101,18 @@ async function getUserByEmail(email){
     return err
   }
 }
-async function deleteAll(){
-  try{
-    let x = await Users.deleteMany({})
-    return x
-  }catch(err){
-    console.log(err)
-  }
-}
 
+//delete all user func
+// async function deleteAll(){
+//   try{
+//     let x = await Users.deleteMany({})
+//     return x
+//   }catch(err){
+//     console.log(err)
+//   }
+// }
+
+//gets the users home details
 async function getUserHomeDetail(token){
     const exits = await Tokens.findById(token)
     const userToFind = await Users.findById(exits.user)
@@ -144,4 +153,5 @@ async function getUserHomeDetail(token){
     }
     return {user: userToFind, chat: chatList, onlineUsers: online}
 }
-module.exports = {createUser, getUserById, getAllUsers, login, getAllEmail,getUserByEmail,deleteAll, getUserHomeDetail}
+// module.exports = {createUser, getUserById, getAllUsers, login, getAllEmail,getUserByEmail,deleteAll, getUserHomeDetail}
+module.exports = {createUser, getUserById, login, getAllEmail,getUserByEmail, getUserHomeDetail}

@@ -6,11 +6,9 @@ socket.on('message',message=>{
 })
 
 socket.on('connect', async function() {
-    // console.log('Connected to server');
     await fetch('/getUserByToken')
     .then(response => response.json())
     .then((data)=>{
-        // console.log(data)
         socket.emit('init', {user:data})
     });
 
@@ -25,8 +23,6 @@ socket.on('leftGame', async message =>{
 
 })
 socket.on('newConnect',async message => {
-    // console.log("newconnect")
-    // console.log(message)
     for(var i = 0; i<message.length;i++){
      let user = message[i]
      await addPlayer(user.x,user.y,"red",20,20, user.user)
@@ -47,9 +43,7 @@ socket.on('status',message=>{
      let start = await initialStart(x,y).then(response =>JSON.stringify(response)).then((data) =>{
          return data
      })
-
      console.log(start)
-    //  await addPlayer(x,y,"red",20,20, start.user)
    return start
    
 }
@@ -67,7 +61,6 @@ async function initialStart(x,y){
 
 
 function test(msg, reciever, chatroom_id){
-    // console.log("Client msg "+ msg)
     date = new Date()
     fetch('/getUserByToken')
     .then(response => response.json())
@@ -128,8 +121,6 @@ function component(width, height, color, x, y) {
 }   
    
    async function getKeyAndMove(e){			
-  
-    // console.log(globalUserID)
    
     var key_code=e.which||e.keyCode;
     switch(key_code){

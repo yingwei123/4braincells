@@ -8,9 +8,9 @@ module.exports = app =>{
         res.render('signin.ejs')
     } )
 
-    app.get("/translate", (req,res)=>{
-        res.render("translate.ejs")
-    })
+    // app.get("/translate", (req,res)=>{
+    //     res.render("translate.ejs")
+    // })
 
     app.get("/profilepictureupload",(req,res)=>{
         res.render("picturechange.ejs")

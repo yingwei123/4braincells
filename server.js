@@ -19,8 +19,8 @@ const server = http.createServer(app);
 
 
 app.set('view engine', 'pug');
-server.listen(process.env.PORT || 3000,()=>{
-    console.log("Server is listening on port " + 3000)
+server.listen(process.env.PORT || 8000,()=>{
+    console.log("Server is listening on port " + 8000)
 })
 
 
@@ -28,7 +28,7 @@ server.listen(process.env.PORT || 3000,()=>{
 const io = socketio(server)
 
 
-mongoose.connect(process.env.MONGODB_URI||'mongodb://localhost:27017/4braincells',  { useNewUrlParser: true,useUnifiedTopology: true })
+mongoose.connect('mongodb://mongo:27017/4braincells',  { useNewUrlParser: true,useUnifiedTopology: true })
 mongoose.set('useFindAndModify', false);
 
 let userSockets ={}
@@ -38,6 +38,7 @@ userPlayer ={}
 
 io.on('connection',async socket => {
     console.log("Socket Connected")
+    //Initial socket connection to add user to sockets and rooms
     socket.on('init',async user => {
         socket.join(user);
         rooms.add(user);
@@ -48,55 +49,46 @@ io.on('connection',async socket => {
 
     })
 
+    //for chatroom to update message
     socket.on('newChatRoom', message => {
         if (rooms.has(message.receiver)) io.in(message.receiver).emit('newChatRoom', message);
     })
+
+    //Chat message when a user sends another user a message
     socket.on('message', async message => {
         console.log(message);
         console.log(io.sockets.adapter.rooms);
-        //let msg = await chatFunc.incommingMessage(message.user, message.receiver,message.msg,message.chatroom_id);
         io.in(message.user).emit('message', message);
         if (rooms.has(message.receiver)) socket.in(message.receiver).emit('message', message);
     })
 
+    //game start triggers when a new player joins the game. It tells all the users their position as well as telling the person who
+    //joined the other player's positions
     socket.on('gameStart', async message=>{
          userPlayer[message.user] = {x:message.x, y:message.y};
          if(userSockets[message.user] === undefined){
             userSockets[message.user.toString()] = socket;
          }
-        //  userSockets[message.user.toString()] = socket;
-    //    for (var key in userPlayer) {
-    //         // userPlayer[key]
-
-    //         console.log("This Key " + key + " Length = "+ userSockets.length)
-    //         userSockets[message.user].emit('newConnect', {user : key, x:userPlayer[key].x,y:userPlayer[key].y})
-    //      }
          positions = []
         for(var key in userPlayer){
             positions.push({user:key, x:userPlayer[key].x, y:userPlayer[key].y})
-            // console.log("User Socket "+ key +" Caller key = "+ message.user)
+
         }
         for(var key in userPlayer){
            userSockets[key].emit('newConnect',positions)
         }
-        // console.log(positions)
     })
 
+    //player movements that gets broadcasted to all users that are playing the game
     socket.on('movement', async message=>{
         userPlayer[message.user]= {x:message.x, y:message.y}
-        // for (var key in userPlayer) {
-        //     userSockets[key].emit('update', message)
-
-        //  }
         positions = []
         for(var key in userPlayer){
             positions.push({user:key, x:userPlayer[key].x, y:userPlayer[key].y})
-            // console.log("User Socket "+ key +" Caller key = "+ message.user)
         }
         for(var key in userPlayer){
            userSockets[key].emit('newConnect',positions)
         }
-        // console.log(message)
     })
 
     socket.on('disconnect', async() =>{
@@ -137,6 +129,6 @@ require('./routes/chatRoutes')(app);
 require('./routes/pages')(app);
 require('./routes/tokensRoutes')(app);
 require('./routes/usersRoutes')(app);
-require('./routes/randomStuff')(app);
+// require('./routes/randomStuff')(app);
 
 
