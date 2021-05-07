@@ -62,6 +62,7 @@ io.on('connection',async socket => {
 
     //Chat message when a user sends another user a message
     socket.on('message', async message => {
+        message.msg = chatFunc.escapeHtml(message.msg);
         let msg = await chatFunc.incommingMessage(message.user, message.receiver,message.msg,message.chatroom_id);
         userSockets[message.user].emit('message', message);
         if ( userSockets.hasOwnProperty(message.receiver))  userSockets[message.receiver].emit('message', message);
