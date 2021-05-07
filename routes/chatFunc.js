@@ -17,6 +17,10 @@ async function incommingMessage(id, personB, message,chatroom_id){
 
 }
 
+function escapeHtml (message) {
+  return message.replace(/&/g, '&amp').replace(/</g, '&lt').replace(/>/g, '&gt');
+}
+
 async function getMessages(chatroom_id){
   try{
     console.log("getMessage= "+chatroom_id)
@@ -149,4 +153,4 @@ async function createChatRoom(sender, receiver){
   };
 }
 
-module.exports ={ addMessage,getAllChatRoom,incommingMessage,deleteChat,findChatRoom,getMessages, createChatRoom, getChatRecord}
+module.exports ={ escapeHtml,getAllChatRoom,incommingMessage,deleteChat,findChatRoom,getMessages, createChatRoom, getChatRecord}
