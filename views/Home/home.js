@@ -41,10 +41,13 @@ socket.on('status', function(message) {
             const msg = document.createElement('p');
             msg.classList.add('recentMessage');
             msg.innerHTML = "Start a Conversation";
+            const notification = document.createElement('div');
+            notification.classList.add("timeNotification")
             nameMessage.appendChild(name);
             nameMessage.appendChild(msg);
             messageSplit.appendChild(image);
             messageSplit.appendChild(nameMessage);
+            messageSplit.appendChild(notification)
             messageBlock.appendChild(messageSplit);
             document.getElementById("recentMessageContainer").appendChild(messageBlock);
         }
@@ -55,38 +58,13 @@ socket.on('message', function(message) {
     console.log(message)
     if (chatRoom !== null && message.chatroom_id === chatRoom.id){
         const container = document.getElementById("socketContainer");
-        const leftMessageContainer = document.createElement('div');
-        const image = document.createElement("img");
-        image.classList.add("messageSenderImage");
-        image.classList.add("rounded");
-        const messageContentContainer = document.createElement("div");
-        const senderName = document.createElement('p');
-        senderName.classList.add("senderName")
-        const messageContent = document.createElement('p');
-        messageContent.classList.add("messageContent");
-        messageContent.innerHTML = message.msg;
-        if (message.sender === userDetail.id){
-            leftMessageContainer.classList.add("singleMessageContainerLeft");
-            messageContentContainer.classList.add("messageContentContainerLeft");
-            image.src = chatRoom.receiver.profilePic;
-            senderName.innerHTML = chatRoom.receiver.firstname+ " "+ chatRoom.receiver.lastname;
-            messageContentContainer.appendChild(senderName);
-            messageContentContainer.appendChild(messageContent);
-            leftMessageContainer.appendChild(image);
-            leftMessageContainer.appendChild(messageContentContainer);
-        }else {
-            leftMessageContainer.classList.add("singleMessageContainerRight");
-            messageContentContainer.classList.add("messageContentContainerRight");
-            image.src = userDetail.profilePic;
-            senderName.innerHTML = userDetail.firstname + " "+ userDetail.lastname;
-            messageContentContainer.appendChild(senderName);
-            messageContentContainer.appendChild(messageContent);
-            leftMessageContainer.appendChild(messageContentContainer);
-            leftMessageContainer.appendChild(image);
-        }
-        container.appendChild(leftMessageContainer);
+        const messagesHtml = createMessageHTML(message.chatroom_id, message.msg, message.receiver);
+        container.appendChild(messagesHtml);
+        const doc = document.getElementById(message.chatroom_id);
+        doc.getElementsByClassName("recentMessage")[0].innerHTML = message.msg;
     }else {
         const chat = document.getElementById(message.chatroom_id);
+        console.log(chat)
         const notificationElem = chat.getElementsByClassName("timeNotification")[0];
         const textElem = chat.getElementsByClassName("recentMessage")[0];
         notificationElem.appendChild(notificationIcon);
@@ -117,6 +95,39 @@ function chatClick(element){
     }
 }
 
+function createMessageHTML (id, message, receiver) {
+    const MessageContainer = document.createElement('div');
+    const image = document.createElement("img");
+    image.classList.add("messageSenderImage");
+    image.classList.add("rounded");
+    const messageContentContainer = document.createElement("div");
+    const senderName = document.createElement('p');
+    senderName.classList.add("senderName")
+    const messageContent = document.createElement('p');
+    messageContent.classList.add("messageContent");
+    messageContent.innerHTML = message;
+    if (receiver === userDetail.id){
+        MessageContainer.classList.add("singleMessageContainerLeft");
+        messageContentContainer.classList.add("messageContentContainerLeft");
+        image.src = chatRoom.receiver.profilePic;
+        senderName.innerHTML = chatRoom.receiver.firstname+ " "+ chatRoom.receiver.lastname;
+        messageContentContainer.appendChild(senderName);
+        messageContentContainer.appendChild(messageContent);
+        MessageContainer.appendChild(image);
+        MessageContainer.appendChild(messageContentContainer);
+    }else {
+        MessageContainer.classList.add("singleMessageContainerRight");
+        messageContentContainer.classList.add("messageContentContainerRight");
+        image.src = userDetail.profilePic;
+        senderName.innerHTML = userDetail.firstname + " "+ userDetail.lastname;
+        messageContentContainer.appendChild(senderName);
+        messageContentContainer.appendChild(messageContent);
+        MessageContainer.appendChild(messageContentContainer);
+        MessageContainer.appendChild(image);
+    }
+    return MessageContainer;
+}
+
 function addEnterListener(){
     const sendInput = document.getElementById('sendMessageInput');
     sendInput.addEventListener("keyup", function(event) {
@@ -125,6 +136,12 @@ function addEnterListener(){
             sendInput.value = "";
         }
     });
+}
+
+function sendMessage() {
+    const sendInput = document.getElementById('sendMessageInput');
+    socket.emit('message', {user: userDetail.id, receiver: chatRoom.receiver.id, msg: sendInput.value, chatroom_id: chatRoom.id});
+    sendInput.value = "";
 }
 function createChatRoom(receiverID){
     const request = new XMLHttpRequest();
@@ -135,7 +152,7 @@ function createChatRoom(receiverID){
             element.setAttribute("data-chat", chatRoom.id);
             element.id = chatRoom.id;
             userDetail.chatRooms.push({id: chatRoom.id, receiver: chatRoom.receiver.id});
-            document.getElementById('rightContainer').innerHTML = "<div class=\"chatProfile\"> <div class=\"chatProfileInfo\"><img class=\"receiverPicture rounded\" src=\"" + chatRoom.receiver.profilePic + "\"> <p class=\"receiverName\">" + chatRoom.receiver.firstname + " " + chatRoom.receiver.lastname + "</p></div> <span class=\"block\"><i class=\"fas fa-ban fa-lg blockIcon\"></i></span></div> <div class=\"socketContainer\"></div> <div class=\"inputContainer\"> <div class=\"imageIconInput\"><i class=\"far fa-image fa-2x imageIcon\"></i><input id=\"sendMessageInput\" class=\"inputMessage\" placeholder=\"Type here to send a message\"><i class=\"fas fa-paper-plane fa-2x sendIcon\"></i></div></div>";
+            document.getElementById('rightContainer').innerHTML = "<div class=\"chatProfile\"> <div class=\"chatProfileInfo\"><img class=\"receiverPicture rounded\" src=\"" + chatRoom.receiver.profilePic + "\"> <p class=\"receiverName\">" + chatRoom.receiver.firstname + " " + chatRoom.receiver.lastname + "</p></div> <span class=\"block\"><i class=\"fas fa-ban fa-lg blockIcon\"></i></span></div> <div id=\"socketContainer\" class=\"socketContainer\"></div> <div class=\"inputContainer\"> <div class=\"imageIconInput\"><i class=\"far fa-image fa-2x imageIcon\"></i><input id=\"sendMessageInput\" class=\"inputMessage\" placeholder=\"Type here to send a message\"><i class=\"fas fa-paper-plane fa-2x sendIcon\" onclick=\"sendMessage()\"></i></div></div>";
             addEnterListener();
             socket.emit('newChatRoom', {user: userDetail.id, receiver: receiverID, room: chatRoom.id});
         }
@@ -161,7 +178,10 @@ function getChatRecords(chatId){
                     messages += "<div class=\"singleMessageContainerLeft\"><img class=\"messageSenderImage rounded\" src=\"" + chatRoom.receiver.profilePic + "\"><div class=\"messageContentContainerLeft\"><p class=\"senderName\">" + chatRoom.receiver.firstname + " " + chatRoom.receiver.lastname + "</p> <p class=\"messageContent\">" + message.content + "</p></div></div>";
                 }
             }
-            document.getElementById('rightContainer').innerHTML = "<div class=\"chatProfile\"> <div class=\"chatProfileInfo\"><img class=\"receiverPicture rounded\" src=\"" + chatRoom.receiver.profilePic + "\"> <p class=\"receiverName\">" + chatRoom.receiver.firstname + " " + chatRoom.receiver.lastname + "</p></div> <span class=\"block\"><i class=\"fas fa-ban fa-lg blockIcon\"></i></span></div> <div id=\"socketContainer\" class=\"socketContainer\">" + messages + "</div> <div class=\"inputContainer\"> <div class=\"imageIconInput\"><i class=\"far fa-image fa-2x imageIcon\"></i><input id=\"sendMessageInput\" class=\"inputMessage\" placeholder=\"Type here to send a message\"><i class=\"fas fa-paper-plane fa-2x sendIcon\"></i></div></div>";
+            document.getElementById('rightContainer').innerHTML = "<div class=\"chatProfile\"> <div class=\"chatProfileInfo\"><img class=\"receiverPicture rounded\" src=\"" + chatRoom.receiver.profilePic + "\"> <p class=\"receiverName\">" + chatRoom.receiver.firstname + " " + chatRoom.receiver.lastname + "</p></div> <span class=\"block\"><i class=\"fas fa-ban fa-lg blockIcon\"></i></span></div> <div id=\"socketContainer\" class=\"socketContainer\">" + messages + "</div> <div class=\"inputContainer\"> <div class=\"imageIconInput\"><i class=\"far fa-image fa-2x imageIcon\"></i><input id=\"sendMessageInput\" class=\"inputMessage\" placeholder=\"Type here to send a message\"><i class=\"fas fa-paper-plane fa-2x sendIcon\" onclick=\"sendMessage()\"></i></div></div>";
+            const notification = document.getElementById(chatId).getElementsByClassName("fa-bell")[0];
+            if (notification) notification.remove()
+
             addEnterListener();
         }
     };

@@ -23,7 +23,6 @@ module.exports = app =>{
         try{
             // console.log(req.body.chatroom_id)
             let chatRoom = await chatFunc.getMessages(req.body.chatroom_id)
-            console.log(chatRoom)
             res.send(chatRoom)
         }catch(err){
             res.send(err)

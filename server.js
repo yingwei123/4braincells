@@ -54,7 +54,7 @@ io.on('connection',async socket => {
 
     })
 
-    //for chatroom to update message
+    //for chatroom to update  message
     socket.on('newChatRoom', message => {
         if (userSockets.hasOwnProperty(message.receiver)) userSockets[message.receiver].emit('newChatRoom', message);
     })
