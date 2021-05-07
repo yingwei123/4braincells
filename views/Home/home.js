@@ -9,16 +9,18 @@ socket.on('connect', function() {
 });
 socket.on('newChatRoom', function(message) {
     console.log(message)
+    userDetail.chatRooms.push({id: message.room, receiver: message.receiver});
     const person = document.getElementById(message.user);
     person.id = message.room;
     person.setAttribute("data-chat", message.room);
 });
 socket.on('status', function(message) {
     console.log(message)
+    const chatList = userDetail.chatRooms;
+    const find = chatList.find(room => room.receiver === message.user.id);
+    const onlineUser = document.getElementById(message.user.id);
     if (message.online){
-        const chatList = userDetail.chatRooms;
-        const find = chatList.find(room => room.receiver === message.user.id);
-        if (!find && !document.getElementById(message.user.id)){
+        if (!find && !onlineUser){
             console.log("no chat room")
             const messageBlock = document.createElement('div');
             messageBlock.classList.add('recentMessageBlock');
@@ -50,6 +52,16 @@ socket.on('status', function(message) {
             messageSplit.appendChild(notification)
             messageBlock.appendChild(messageSplit);
             document.getElementById("recentMessageContainer").appendChild(messageBlock);
+        }
+    }else {
+        if (find){
+            const id = find.id;
+            console.log(id)
+            const elem = document.getElementById(id);
+            elem.remove();
+        }else {
+            console.log(onlineUser);
+            onlineUser.remove();
         }
     }
 });
@@ -162,7 +174,12 @@ function createChatRoom(receiverID){
     request.setRequestHeader("Content-type", "application/json");
     request.send(JSON.stringify(messageObject));
 }
-
+async function logout() {
+    const request = await fetch('/logout', {method: 'POST'});
+    if (request.ok) {
+        window.location.href = request.url;
+    }
+}
 function getChatRecords(chatId){
     const request = new XMLHttpRequest();
     request.onreadystatechange = function(){

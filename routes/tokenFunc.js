@@ -10,6 +10,15 @@ async function delteTokenByUserId(user_id){
     }
 }
 
+async function deleteToken(token){
+    try{
+        return await Tokens.findByIdAndDelete(token)
+    }catch(err){
+        console.log(err);
+        return null;
+    }
+}
+
 async function determineValid(token_id){
     try{
         token = await Tokens.findById(token_id)
@@ -72,4 +81,4 @@ async function clearTokens(){
     }
 }
 
-module.exports = {delteTokenByUserId, determineValid, getUserByToken, logOut, getAllToken,clearTokens};
+module.exports = {delteTokenByUserId, determineValid, getUserByToken, logOut, getAllToken,clearTokens, deleteToken};

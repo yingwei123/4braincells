@@ -26,7 +26,7 @@ module.exports = app =>{
                     msg: err
                 });
             }
-            
+
             else{
                 if(req.file == undefined){
                     res.render('picturechange.ejs', {
@@ -76,7 +76,21 @@ module.exports = app =>{
 
     })
 
-  //user Login
+    app.post("/logout", async(req,res) =>{
+        try{
+            let logout = await tokenFunc.deleteToken(req.cookies['token'])
+            if(logout){
+                res.clearCookie("token")
+                res.redirect(302, '/');
+            }
+            else res.sendStatus(404)
+
+        }catch(err){
+            res.sendStatus(404)
+        }
+
+    })
+
     app.post("/login", async(req,res) =>{
         try{
             const email = req.body.email;
@@ -127,7 +141,7 @@ module.exports = app =>{
     //get all email, need valid token
     app.get("/allEmail", async(req,res) =>{
       try{
-         
+
     let allEmail = await userFunc.getAllEmail(req.cookies['token'])
     res.send(allEmail)
       }catch(err){

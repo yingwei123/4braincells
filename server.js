@@ -47,6 +47,7 @@ io.on('connection',async socket => {
             lastname: getUser.lastname,
             profilePic: getUser.profilePic
         }
+        console.log(userRes)
         for (let key in userSockets) {
             userSockets[key].emit('status', {user : userRes, online: true});
         }
@@ -102,10 +103,17 @@ io.on('connection',async socket => {
 
         if(userSockets.hasOwnProperty(socket.userId)){
             console.log(socket.userId  + " socket is removed")
-            const userRes = await Users.findByIdAndUpdate(socket.userId,{online:false})
+            const getUser = await Users.findByIdAndUpdate(socket.userId,{online:false})
             delete userSockets[socket.userId];
+            const userResponse = {
+                id: getUser._id,
+                online: getUser.online,
+                firstname: getUser.firstname,
+                lastname: getUser.lastname,
+                profilePic: getUser.profilePic
+            }
             for (let key in userSockets) {
-                userSockets[key].emit('status', {user : userRes, online: false});
+                userSockets[key].emit('status', {user : userResponse, online: false});
             }
         }
         const stuff = userPlayer[userToRemove]

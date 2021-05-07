@@ -13,6 +13,8 @@ html
         div.leftContainer
             a(href='/game')
                 i.fas.fa-gamepad.gameIcon.fa-2x
+            div.signOutIcon(onclick="logout()")
+                p Logout
             div.userProfile
                 div.userProfileImageContainer
                     img.rounded.userProfileImage(src=user.profilePic)
